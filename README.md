@@ -5,7 +5,7 @@ jQuery Upload File plugin provides Multiple file Uploads with progress bar.Works
 
 ---
 
-#Tutorial
+#Demo
 http://hayageek.com/docs/jquery-upload-file.php
 
 ---
