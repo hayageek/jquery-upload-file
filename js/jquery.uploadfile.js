@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 2.0.1
+ * version: 2.0
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -28,7 +28,7 @@
             showAbort: true,
             showDone: true,
             showStatusAfterSuccess: true,
-            showStatusOnError:true,
+            showStatusAfterError:true,
             buttonCss: false,
             buttonClass: false,
             onSubmit: function (files) {},
@@ -226,7 +226,6 @@
                 uploadLabel.attr('for', fileUploadId);
             } else {
                 uploadLabel.click(function () {
-                    fileInput.focus();
                     fileInput.click();
                 });
             }
