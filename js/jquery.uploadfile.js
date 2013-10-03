@@ -161,7 +161,7 @@
                 }
                 fileInputStr = "<input type='file' id='" + fileUploadId + "' name='" + s.fileName + "' multiple/>";
             }
-            fileInput = $(fileInputStr).appendTo(form);
+            var fileInput = $(fileInputStr).appendTo(form);
 
             fileInput.change(function () {
 
