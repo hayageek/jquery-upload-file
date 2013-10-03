@@ -10,6 +10,10 @@ http://hayageek.com/docs/jquery-upload-file.php
 
 ---
 
+#Supported Browsers
+IE 8.0,IE 9.0,IE 10.0,Firefox,Safari,Opera,Chrome
+
+Drag drop is supported in IE10,Firefox,Safari,Opera,Chrome
  
 ##API
 
@@ -26,6 +30,12 @@ var uploadObj = $("#uploadDivId").uploadFile(options);
 uploadObj.startUpload();
 
 ````
+
+---
+##Verions
+Fix for IE8,IE9.
+Drap drop is supported.
+
 
 ---
 
@@ -62,6 +72,9 @@ Name of the file input field. Default is <code>file</code>
  
 ###multiple 
 If it is set to <code>true</code>, multiple file selection is allowed. Default is<code>false</code>
+
+###dragDrop
+Drag drop is enabled if it is set to <cod>true</code>
 
 ###autoSubmit  
 If it is set to <code>true</code>, files are uploaded automatically. Otherwise you need to call <code>.startUpload</code> function. Default is<code>true</code>
