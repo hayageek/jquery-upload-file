@@ -33,9 +33,12 @@ uploadObj.startUpload();
 
 ---
 ##Verions
+### 2.0.3
+Fix for extra post Data
+
+### 2.0.2
 Fix for IE8,IE9.
 Drap drop is supported.
-
 
 ---
 

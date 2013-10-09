@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 2.0
+ * version: 2.0.3
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -112,6 +112,28 @@
             });
 
         }
+ 		function serializeData(extraData) {
+ 					var serialized =[];
+ 					if(jQuery.type(extraData) == "string")
+ 					{
+ 						serialized = extraData.split('&');
+ 					}
+ 					else
+ 					{
+ 						serialized = $.param(extraData).split('&');
+ 					}
+                    var len = serialized.length;
+                    var result = [];
+                    var i, part;
+                    for (i = 0; i < len; i++) {
+                        // #252; undo param space replacement
+                        serialized[i] = serialized[i].replace(/\+/g, ' ');
+                        part = serialized[i].split('=');
+                        // #278; use array instead of object storage, favoring array serializations
+                        result.push([decodeURIComponent(part[0]), decodeURIComponent(part[1])]);
+                    }
+                    return result;
+            }
 
         function serializeAndUploadFiles(s, obj, files) {
             for (var i = 0; i < files.length; i++) {
@@ -119,8 +141,13 @@
                     var ts = s;
                     var fd = new FormData();
                     fd.append(s.fileName, files[i]);
-                    for (var key in s.formData) {
-                        fd.append(key, s.formData[key]);
+                    
+               		var sData = serializeData(s.formData);
+                    for (var j = 0; j < sData.length; j++)
+	                {  if (sData[i])
+		                {
+                            fd.append(sData[j][0], sData[j][1]);
+                        }
                     }
                     ts.fileData = fd;
 
