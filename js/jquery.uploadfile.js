@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 2.0.4
+ * version: 2.0.5
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -145,7 +145,7 @@
                     {
                			var sData = serializeData(s.formData);
 	                    for (var j = 0; j < sData.length; j++)
-		                {  if (sData[i])
+		                {  if (sData[j])
 			                {
                             fd.append(sData[j][0], sData[j][1]);
             	            }
