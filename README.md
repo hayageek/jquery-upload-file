@@ -31,6 +31,18 @@ uploadObj.startUpload();
 
 ````
 
+###stopUpload()
+Aborts all the uploads
+````javascript
+uploadObj.stopUpload();
+````
+
+#getResponses()
+Responses from the server are collected  and returned.
+````javascript
+uploadObj.getResponses()
+````
+
 ---
 ##Verions
 ### 2.0.3
@@ -57,6 +69,20 @@ Upload Form enctype. Default is <code>multipart/form-data</code>.
   
 ###formData
 An object that should be send with file upload. <code>data: { key1: 'value1', key2: 'value2' }</code>
+
+###dynamicFormData
+To provide form data dynamically
+````javascript
+dynamicFormData: function()
+{
+    //var data ="XYZ=1&ABCD=2";
+    var data ={"XYZ":1,"ABCD":2};
+	return data;    	
+}
+````
+
+###maxFileSize
+Allowed Maximum file Size in bytes.
 
 
 ###returnType 
@@ -93,6 +119,9 @@ If it is set to <code>false</code>, Done button is hidden when the upload is com
   
 ###showStatusAfterSuccess 
 If it is set to <code>false</code>, status box will be hidden after the upload is done. Default is<code>true</code> 
+
+###showError
+If it is set to <code>false</code>, Errors are not shown to user. Default is<code>true</code> 
 
 ###onSubmit
 callback back to be invoked before the file upload.   
