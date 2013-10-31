@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 2.0.6
+ * version: 2.0.7
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -25,6 +25,10 @@
             allowedTypes: "*",
             fileName: "file",
             formData: {},
+            dynamicFormData: function()
+             {
+             	return {};
+             },
             maxFileSize: -1,
             multiple: true,
             dragDrop: true,
