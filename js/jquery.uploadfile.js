@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 2.0.7
+ * version: 2.0.8
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -25,10 +25,9 @@
             allowedTypes: "*",
             fileName: "file",
             formData: {},
-            dynamicFormData: function()
-             {
-             	return {};
-             },
+            dynamicFormData: function () {
+                return {};
+            },
             maxFileSize: -1,
             multiple: true,
             dragDrop: true,
@@ -39,16 +38,18 @@
             showError: true,
             showStatusAfterSuccess: true,
             showStatusAfterError: true,
-            buttonCss: false,
-            buttonClass: false,
             onSubmit: function (files, xhr) {},
             onSuccess: function (files, response, xhr) {},
             onError: function (files, status, message) {},
+            afterUploadAll: false,
             uploadButtonClass: "ajax-file-upload",
             dragDropStr: "<span><b>Drag &amp; Drop Files</b></span>"
         }, options);
 
         this.fileCounter = 1;
+        this.fCounter = 0; //failed uploads
+        this.sCounter = 0; //success uploads
+        this.tCounter = 0; //total uploads
         var formGroup = "ajax-file-upload-" + (new Date().getTime());
         this.formGroup = formGroup;
         this.hide();
@@ -64,8 +65,6 @@
 
         var uploadLabel = $('<label for="" >' + $(this).html() + '</label>');
         $(uploadLabel).addClass(s.uploadButtonClass);
-
-
 
         //wait form ajax Form plugin and initialize		
         (function checkAjaxFormLoaded() {
@@ -101,6 +100,20 @@
         this.getResponses = function () {
             return this.responses;
         }
+        var checking = false;
+
+        function checkPendingUploads() {
+            if (s.afterUploadAll && !checking) {
+                checking = true;
+                (function checkPending() {
+                    if (obj.sCounter + obj.fCounter == obj.tCounter) {
+                        s.afterUploadAll(this);
+                        checking = false;
+                    } else window.setTimeout(checkPending, 100);
+                })();
+            }
+
+        }
 
         function setDragDropHandlers(obj, s, ddObj) {
             ddObj.on('dragenter', function (e) {
@@ -117,7 +130,13 @@
                 e.preventDefault();
                 obj.errorLog.html("");
                 var files = e.originalEvent.dataTransfer.files;
+                if (!s.multiple && files.length > 1) {
+                    if (s.showError) $("<font color='red'>Multiple File Drag &amp; Drop is not allowed</font>").appendTo(obj.errorLog);
+                    return;
+                }
                 serializeAndUploadFiles(s, obj, files);
+                obj.tCounter += files.length;
+                window.setTimeout(checkPendingUploads, 1000); //not so critical
             });
 
             $(document).on('dragenter', function (e) {
@@ -127,12 +146,12 @@
             $(document).on('dragover', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
-                obj.css('border', '2px dotted #A5A5C7');
+                ddObj.css('border', '2px dotted #A5A5C7');
             });
             $(document).on('drop', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
-                obj.css('border', '2px dotted #A5A5C7');
+                ddObj.css('border', '2px dotted #A5A5C7');
             });
 
         }
@@ -171,10 +190,12 @@
             for (var i = 0; i < files.length; i++) {
                 if (!isFileTypeAllowed(obj, s, files[i].name)) {
                     if (s.showError) $("<div><font color='red'><b>" + files[i].name + "</b> is not allowed. Allowed " + s.allowedTypes + "<br></div>").appendTo(obj.errorLog);
+                    obj.fCounter++; //failed
                     continue;
                 }
                 if (s.maxFileSize != -1 && files[i].size > s.maxFileSize) {
                     if (s.showError) $("<div><font color='red'><b>" + files[i].name + "</b> is not allowed. Allowed Max size: " + getSizeStr(s.maxFileSize) + "<br></div>").appendTo(obj.errorLog);
+                    obj.fCounter++; //failed
                     continue;
                 }
                 var ts = s;
@@ -232,6 +253,7 @@
             fileInput.change(function () {
 
                 obj.errorLog.html("");
+                window.setTimeout(checkPendingUploads, 1000); //not so critical
                 var fileExtensions = s.allowedTypes.toLowerCase().split(",");
                 var fileArray = [];
 
@@ -249,6 +271,7 @@
                     }
 
                 }
+                obj.tCounter += fileArray.length;
 
                 uploadLabel.unbind("click");
                 createCutomInputFile(obj, group, s, uploadLabel);
@@ -301,7 +324,7 @@
             this.statusbar = $("<div class='ajax-file-upload-statusbar'></div>");
             this.filename = $("<div class='ajax-file-upload-filename'></div>").appendTo(this.statusbar);
             this.progressDiv = $("<div class='ajax-file-upload-progress'>").appendTo(this.statusbar).hide();
-            this.progressbar = $("<div class='ajax-file-upload-bar'></div>").appendTo(this.progressDiv);
+            this.progressbar = $("<div class='ajax-file-upload-bar " + obj.formGroup + "'></div>").appendTo(this.progressDiv);
             this.abort = $("<div class='ajax-file-upload-red " + obj.formGroup + "'>Abort</div>").appendTo(this.statusbar).hide();
             this.cancel = $("<div class='ajax-file-upload-red'>Cancel</div>").appendTo(this.statusbar).hide();
             this.done = $("<div class='ajax-file-upload-green'>Done</div>").appendTo(this.statusbar).hide();
@@ -311,7 +334,6 @@
 
 
         function ajaxFormSubmit(form, s, pd, fileArray, obj) {
-
             var currentXHR = null;
             var options = {
                 cache: false,
@@ -378,6 +400,7 @@
 
                     }
                     form.remove();
+                    obj.sCounter += fileArray.length;
                 },
                 error: function (xhr, status, errMsg) {
                     pd.abort.hide();
@@ -396,6 +419,8 @@
                     }
 
                     form.remove();
+                    obj.fCounter += fileArray.length;
+
                 }
             };
             if (s.autoSubmit) {

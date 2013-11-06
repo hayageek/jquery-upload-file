@@ -44,15 +44,6 @@ uploadObj.getResponses()
 ````
 
 ---
-##Verions
-### 2.0.3
-Fix for extra post Data
-
-### 2.0.2
-Fix for IE8,IE9.
-Drap drop is supported.
-
----
 
 ##Options
 
@@ -133,13 +124,21 @@ onSubmit:function(files)
 ````
 
 ###onSuccess  
-callback back to be invoked when the upload is successful. 
+callback to be invoked when the upload is successful. 
 ````javascript
 onSuccess:function(files,data,xhr)
 {
 	//files: list of files
 	//data: response from server
 	//xhr : jquer xhr object
+}
+````
+###afterUploadAll
+callback to be invoked when all the files are uploaded.
+````javascript
+afterUploadAll:function()
+{
+
 }
 ````
 
