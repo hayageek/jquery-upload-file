@@ -120,6 +120,7 @@ callback back to be invoked before the file upload.
 onSubmit:function(files)
 {
 	//files : List of files to be uploaded
+	//return flase;   to stop upload
 }
 ````
 

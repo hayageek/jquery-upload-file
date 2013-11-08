@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 2.0.8
+ * version: 2.0.9
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -43,7 +43,14 @@
             onError: function (files, status, message) {},
             afterUploadAll: false,
             uploadButtonClass: "ajax-file-upload",
-            dragDropStr: "<span><b>Drag &amp; Drop Files</b></span>"
+            dragDropStr: "<span><b>Drag &amp; Drop Files</b></span>",
+            abortStr: "Abort",
+            cancelStr: "Cancel",
+            doneStr: "Done",
+            multiDragErrorStr: "Multiple File Drag &amp; Drop is not allowed.",
+            extErrorStr: "is not allowed. Allowed extensions: ",
+            sizeErrorStr: "is not allowed. Allowed Max size: ",
+            uploadErrorStr: "Upload is not allowed"
         }, options);
 
         this.fileCounter = 1;
@@ -106,7 +113,7 @@
             if (s.afterUploadAll && !checking) {
                 checking = true;
                 (function checkPending() {
-                    if (obj.sCounter + obj.fCounter == obj.tCounter) {
+                    if (obj.sCounter != 0 && (obj.sCounter + obj.fCounter == obj.tCounter)) {
                         s.afterUploadAll(this);
                         checking = false;
                     } else window.setTimeout(checkPending, 100);
@@ -131,7 +138,7 @@
                 obj.errorLog.html("");
                 var files = e.originalEvent.dataTransfer.files;
                 if (!s.multiple && files.length > 1) {
-                    if (s.showError) $("<font color='red'>Multiple File Drag &amp; Drop is not allowed</font>").appendTo(obj.errorLog);
+                    if (s.showError) $("<div><font color='red'>" + s.multiDragErrorStr + "</font></div>").appendTo(obj.errorLog);
                     return;
                 }
                 serializeAndUploadFiles(s, obj, files);
@@ -189,12 +196,12 @@
         function serializeAndUploadFiles(s, obj, files) {
             for (var i = 0; i < files.length; i++) {
                 if (!isFileTypeAllowed(obj, s, files[i].name)) {
-                    if (s.showError) $("<div><font color='red'><b>" + files[i].name + "</b> is not allowed. Allowed " + s.allowedTypes + "<br></div>").appendTo(obj.errorLog);
+                    if (s.showError) $("<div><font color='red'><b>" + files[i].name + "</b> " + s.extErrorStr + s.allowedTypes + "</font></div>").appendTo(obj.errorLog);
                     obj.fCounter++; //failed
                     continue;
                 }
                 if (s.maxFileSize != -1 && files[i].size > s.maxFileSize) {
-                    if (s.showError) $("<div><font color='red'><b>" + files[i].name + "</b> is not allowed. Allowed Max size: " + getSizeStr(s.maxFileSize) + "<br></div>").appendTo(obj.errorLog);
+                    if (s.showError) $("<div><font color='red'><b>" + files[i].name + "</b> " + s.sizeErrorStr + getSizeStr(s.maxFileSize) + "</font></div>").appendTo(obj.errorLog);
                     obj.fCounter++; //failed
                     continue;
                 }
@@ -213,7 +220,7 @@
                 }
                 ts.fileData = fd;
 
-                var pd = new createProgressDiv(obj);
+                var pd = new createProgressDiv(obj, s);
                 pd.filename.html(obj.fileCounter + "). " + files[i].name);
                 var form = $("<form style='display:block; position:absolute;left: 150px;' class='" + obj.formGroup + "' method='" + s.method + "' action='" + s.url + "' enctype='" + s.enctype + "'></form>");
                 form.appendTo('body');
@@ -266,7 +273,7 @@
                     var filenameStr = $(this).val();
                     fileArray.push(filenameStr);
                     if (!isFileTypeAllowed(obj, s, filenameStr)) {
-                        if (s.showError) $("<font color='red'><b>" + filenameStr + "</b> is not allowed. Allowed " + s.allowedTypes + "<br>").appendTo(obj.errorLog);
+                        if (s.showError) $("<div><font color='red'><b>" + filenameStr + "</b> " + s.extErrorStr + s.allowedTypes + "</font></div>").appendTo(obj.errorLog);
                         return;
                     }
 
@@ -277,7 +284,7 @@
                 createCutomInputFile(obj, group, s, uploadLabel);
 
                 form.addClass(group);
-                if (s.multiple && feature.formdata) //use HTML5 support and split file submission
+                if (feature.fileapi && feature.formdata) //use HTML5 support and split file submission
                 {
                     form.removeClass(group); //Stop Submitting when.
                     var files = this.files;
@@ -288,7 +295,7 @@
                         fileList += obj.fileCounter + "). " + fileArray[i] + "<br>";
                         obj.fileCounter++;
                     }
-                    var pd = new createProgressDiv(obj);
+                    var pd = new createProgressDiv(obj, s);
                     pd.filename.html(fileList);
                     ajaxFormSubmit(form, s, pd, fileArray, obj);
                 }
@@ -320,14 +327,14 @@
         }
 
 
-        function createProgressDiv(obj) {
+        function createProgressDiv(obj, s) {
             this.statusbar = $("<div class='ajax-file-upload-statusbar'></div>");
             this.filename = $("<div class='ajax-file-upload-filename'></div>").appendTo(this.statusbar);
             this.progressDiv = $("<div class='ajax-file-upload-progress'>").appendTo(this.statusbar).hide();
             this.progressbar = $("<div class='ajax-file-upload-bar " + obj.formGroup + "'></div>").appendTo(this.progressDiv);
-            this.abort = $("<div class='ajax-file-upload-red " + obj.formGroup + "'>Abort</div>").appendTo(this.statusbar).hide();
-            this.cancel = $("<div class='ajax-file-upload-red'>Cancel</div>").appendTo(this.statusbar).hide();
-            this.done = $("<div class='ajax-file-upload-green'>Done</div>").appendTo(this.statusbar).hide();
+            this.abort = $("<div class='ajax-file-upload-red " + obj.formGroup + "'>" + s.abortStr + "</div>").appendTo(this.statusbar).hide();
+            this.cancel = $("<div class='ajax-file-upload-red'>" + s.cancelStr + "</div>").appendTo(this.statusbar).hide();
+            this.done = $("<div class='ajax-file-upload-green'>" + s.doneStr + "</div>").appendTo(this.statusbar).hide();
             obj.errorLog.after(this.statusbar);
             return this;
         }
@@ -344,23 +351,33 @@
                 formData: s.fileData,
                 dataType: s.returnType,
                 beforeSubmit: function (formData, $form, options) {
-                    var dynData = s.dynamicFormData();
-                    if (dynData) {
-                        var sData = serializeData(dynData);
-                        if (sData) {
-                            for (var j = 0; j < sData.length; j++) {
-                                if (sData[j]) {
-                                    if (s.fileData != undefined) options.formData.append(sData[j][0], sData[j][1]);
-                                    else options.data[sData[j][0]] = sData[j][1];
+                    if (s.onSubmit.call(this, fileArray) != false) {
+                        var dynData = s.dynamicFormData();
+                        if (dynData) {
+                            var sData = serializeData(dynData);
+                            if (sData) {
+                                for (var j = 0; j < sData.length; j++) {
+                                    if (sData[j]) {
+                                        if (s.fileData != undefined) options.formData.append(sData[j][0], sData[j][1]);
+                                        else options.data[sData[j][0]] = sData[j][1];
+                                    }
                                 }
                             }
                         }
+                        return true;
                     }
-                    return true;
+                    obj.fCounter += fileArray.length;
+                    pd.statusbar.append("<div><font color='red'>" + s.uploadErrorStr + "</font></div>");
+                    pd.cancel.show()
+                    pd.cancel.click(function () {
+                        form.remove();
+                        pd.statusbar.remove();
+                    });
+
+                    return false;
                 },
                 beforeSend: function (xhr, o) {
 
-                    s.onSubmit.call(this, fileArray, xhr);
                     pd.progressDiv.show();
                     pd.cancel.hide();
                     pd.done.hide();
@@ -441,6 +458,5 @@
         return this;
 
     }
-
 
 }(jQuery));
