@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 2.0.9
+ * version: 3.0
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -142,8 +142,6 @@
                     return;
                 }
                 serializeAndUploadFiles(s, obj, files);
-                obj.tCounter += files.length;
-                window.setTimeout(checkPendingUploads, 1000); //not so critical
             });
 
             $(document).on('dragenter', function (e) {
@@ -197,12 +195,10 @@
             for (var i = 0; i < files.length; i++) {
                 if (!isFileTypeAllowed(obj, s, files[i].name)) {
                     if (s.showError) $("<div><font color='red'><b>" + files[i].name + "</b> " + s.extErrorStr + s.allowedTypes + "</font></div>").appendTo(obj.errorLog);
-                    obj.fCounter++; //failed
                     continue;
                 }
                 if (s.maxFileSize != -1 && files[i].size > s.maxFileSize) {
                     if (s.showError) $("<div><font color='red'><b>" + files[i].name + "</b> " + s.sizeErrorStr + getSizeStr(s.maxFileSize) + "</font></div>").appendTo(obj.errorLog);
-                    obj.fCounter++; //failed
                     continue;
                 }
                 var ts = s;
@@ -260,7 +256,6 @@
             fileInput.change(function () {
 
                 obj.errorLog.html("");
-                window.setTimeout(checkPendingUploads, 1000); //not so critical
                 var fileExtensions = s.allowedTypes.toLowerCase().split(",");
                 var fileArray = [];
 
@@ -278,8 +273,6 @@
                     }
 
                 }
-                obj.tCounter += fileArray.length;
-
                 uploadLabel.unbind("click");
                 createCutomInputFile(obj, group, s, uploadLabel);
 
@@ -341,6 +334,8 @@
 
 
         function ajaxFormSubmit(form, s, pd, fileArray, obj) {
+            obj.tCounter += fileArray.length;
+            window.setTimeout(checkPendingUploads, 1000); //not so critical
             var currentXHR = null;
             var options = {
                 cache: false,
@@ -366,14 +361,13 @@
                         }
                         return true;
                     }
-                    obj.fCounter += fileArray.length;
                     pd.statusbar.append("<div><font color='red'>" + s.uploadErrorStr + "</font></div>");
                     pd.cancel.show()
                     pd.cancel.click(function () {
                         form.remove();
                         pd.statusbar.remove();
                     });
-
+                    obj.fCounter += fileArray.length;
                     return false;
                 },
                 beforeSend: function (xhr, o) {
@@ -458,5 +452,6 @@
         return this;
 
     }
+
 
 }(jQuery));
