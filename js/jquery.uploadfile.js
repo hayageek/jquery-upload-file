@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 3.0
+ * version: 3.0.1
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -114,7 +114,7 @@
                 checking = true;
                 (function checkPending() {
                     if (obj.sCounter != 0 && (obj.sCounter + obj.fCounter == obj.tCounter)) {
-                        s.afterUploadAll(this);
+                        s.afterUploadAll(obj);
                         checking = false;
                     } else window.setTimeout(checkPending, 100);
                 })();
@@ -334,8 +334,6 @@
 
 
         function ajaxFormSubmit(form, s, pd, fileArray, obj) {
-            obj.tCounter += fileArray.length;
-            window.setTimeout(checkPendingUploads, 1000); //not so critical
             var currentXHR = null;
             var options = {
                 cache: false,
@@ -359,15 +357,16 @@
                                 }
                             }
                         }
+                        obj.tCounter += fileArray.length;
+                        window.setTimeout(checkPendingUploads, 1000); //not so critical
                         return true;
                     }
                     pd.statusbar.append("<div><font color='red'>" + s.uploadErrorStr + "</font></div>");
                     pd.cancel.show()
+                    form.remove();
                     pd.cancel.click(function () {
-                        form.remove();
                         pd.statusbar.remove();
                     });
-                    obj.fCounter += fileArray.length;
                     return false;
                 },
                 beforeSend: function (xhr, o) {

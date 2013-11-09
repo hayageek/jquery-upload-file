@@ -137,9 +137,9 @@ onSuccess:function(files,data,xhr)
 ###afterUploadAll
 callback to be invoked when all the files are uploaded.
 ````javascript
-afterUploadAll:function()
+afterUploadAll:function(obj)
 {
-
+	//You can get data of the plugin using obj
 }
 ````
 
