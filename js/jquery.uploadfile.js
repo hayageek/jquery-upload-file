@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 3.0.1
+ * version: 3.0.2
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -305,7 +305,7 @@
                 position: 'absolute',
                 left: '-550px'
             });
-            form.appendTo('body');
+            form.appendTo(obj);
 
             if (navigator.appVersion.indexOf("MSIE ") != -1) //IE Browser
             {
