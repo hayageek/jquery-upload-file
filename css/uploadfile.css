@@ -78,10 +78,11 @@ margin-right:5px;
 .ajax-file-upload {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 16px;
-  font-weight: bold;
+   font-weight: bold;
 	padding: 15px 20px;
 	cursor:pointer;	
 	line-height:20px;
+	height:25px;
 	margin:0 10px 10px 0;
   display: inline-block;
   background: #fff;
@@ -110,6 +111,7 @@ margin-right:5px;
       -webkit-box-shadow: 0 2px 0 0 #15719f;
       box-shadow: 0 2px 0 0 #15719f;
 }
+
 .ajax-upload-dragdrop
 {
 

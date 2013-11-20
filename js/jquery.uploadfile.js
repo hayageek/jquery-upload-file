@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 3.0.3
+ * version: 3.0.4
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -302,20 +302,20 @@
             });
 
 			uploadLabel.css({position: 'relative',overflow:'hidden'});
-            form.appendTo(uploadLabel);
-			
 			fileInput.css({position: 'absolute',  
 							'top': '-5px',
-							'width': 100,  
-							'height':uploadLabel.height(),
+							'width': '150px',  
+							'height':'80px',
 							'left': '-5px',
-							'z-index': '2',
+							'z-index': '100',
 							'opacity': '0.0',
 							'filter':'alpha(opacity=0)',
 							'-ms-filter':"alpha(opacity=0)",
 							'-khtml-opacity':'0.0',
-							'-moz-opacity':'0.0'});
-          
+							'-moz-opacity':'0.0'
+							});
+         form.appendTo(uploadLabel);
+
             //dont hide it, but move it to 
            /* form.css({
                 margin: 0,
