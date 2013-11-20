@@ -107,6 +107,10 @@ If it is set to <code>false</code>, Abort button is hidden when the upload is in
 
 ###showDone  
 If it is set to <code>false</code>, Done button is hidden when the upload is completed. Default is<code>true</code>
+
+###showDelete
+If it is set to <code>true</code>, Delete button is shown when the upload is completed. Default is<code>false</code>,You need to 
+implement deleteCallback() function.
   
 ###showStatusAfterSuccess 
 If it is set to <code>false</code>, status box will be hidden after the upload is done. Default is<code>true</code> 
@@ -144,7 +148,7 @@ afterUploadAll:function(obj)
 ````
 
 ###onError  
-callback back to be invoked when the upload is failed. 
+callback  to be invoked when the upload is failed. 
 ````javascript
 onError: function(files,status,errMsg)
 {
@@ -153,3 +157,25 @@ onError: function(files,status,errMsg)
 	//errMsg: error message
 }
 ````
+###deleteCallback  
+callback  to be invoked when the user clicks on Delete button.
+````javascript
+deleteCallback: function(data,pd)
+{
+	for(var i=0;i<data.length;i++)
+	{
+	 	$.post("delete.php",{op:"delete",name:data[i]},
+	    function(resp, textStatus, jqXHR)
+	    {
+			//Show Message	
+			alert("File Deleted");	    
+	    });
+	 }		
+	pd.statusbar.hide(); //You choice to hide/not.
+
+}
+````
+
+
+
+

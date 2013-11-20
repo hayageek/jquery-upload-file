@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 3.0.2
+ * version: 3.0.3
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -35,17 +35,20 @@
             showCancel: true,
             showAbort: true,
             showDone: true,
+            showDelete:false,
             showError: true,
             showStatusAfterSuccess: true,
             showStatusAfterError: true,
             onSubmit: function (files, xhr) {},
             onSuccess: function (files, response, xhr) {},
             onError: function (files, status, message) {},
+            deleteCallback: false,
             afterUploadAll: false,
             uploadButtonClass: "ajax-file-upload",
             dragDropStr: "<span><b>Drag &amp; Drop Files</b></span>",
             abortStr: "Abort",
             cancelStr: "Cancel",
+            deletelStr: "Delete",
             doneStr: "Done",
             multiDragErrorStr: "Multiple File Drag &amp; Drop is not allowed.",
             extErrorStr: "is not allowed. Allowed extensions: ",
@@ -78,7 +81,7 @@
             if ($.fn.ajaxForm) {
 
                 if (s.dragDrop) {
-                    var dragDrop = $('<div class="ajax-upload-dragdrop"></div>');
+                    var dragDrop = $('<div class="ajax-upload-dragdrop" style="vertical-align:top;"></div>');
                     $(obj).before(dragDrop);
                     $(dragDrop).append(uploadLabel);
                     $(dragDrop).append($(s.dragDropStr));
@@ -274,6 +277,7 @@
 
                 }
                 uploadLabel.unbind("click");
+                form.hide();
                 createCutomInputFile(obj, group, s, uploadLabel);
 
                 form.addClass(group);
@@ -297,24 +301,37 @@
 
             });
 
+			uploadLabel.css({position: 'relative',overflow:'hidden'});
+            form.appendTo(uploadLabel);
+			
+			fileInput.css({position: 'absolute',  
+							'top': '-5px',
+							'width': 100,  
+							'height':uploadLabel.height(),
+							'left': '-5px',
+							'z-index': '2',
+							'opacity': '0.0',
+							'filter':'alpha(opacity=0)',
+							'-ms-filter':"alpha(opacity=0)",
+							'-khtml-opacity':'0.0',
+							'-moz-opacity':'0.0'});
+          
             //dont hide it, but move it to 
-            form.css({
+           /* form.css({
                 margin: 0,
                 padding: 0,
                 display: 'block',
                 position: 'absolute',
-                left: '-550px'
+                left: '50px'
             });
-            form.appendTo(obj);
-
-            if (navigator.appVersion.indexOf("MSIE ") != -1) //IE Browser
+           if (navigator.appVersion.indexOf("MSIE ") != -1) //IE Browser
             {
                 uploadLabel.attr('for', fileUploadId);
             } else {
                 uploadLabel.click(function () {
                     fileInput.click();
                 });
-            }
+            }*/
 
 
         }
@@ -328,6 +345,7 @@
             this.abort = $("<div class='ajax-file-upload-red " + obj.formGroup + "'>" + s.abortStr + "</div>").appendTo(this.statusbar).hide();
             this.cancel = $("<div class='ajax-file-upload-red'>" + s.cancelStr + "</div>").appendTo(this.statusbar).hide();
             this.done = $("<div class='ajax-file-upload-green'>" + s.doneStr + "</div>").appendTo(this.statusbar).hide();
+            this.del = $("<div class='ajax-file-upload-red'>" + s.deletelStr + "</div>").appendTo(this.statusbar).hide();
             obj.errorLog.after(this.statusbar);
             return this;
         }
@@ -404,6 +422,17 @@
                         } else {
                             pd.done.hide();
                         }
+                        if(s.showDelete)
+                        {
+                        	pd.del.show();
+                        	 pd.del.click(function () {
+                        		if(s.deleteCallback) s.deleteCallback.call(this, data,pd);
+                            });
+                        }
+                        else
+                        {
+	                        pd.del.hide();
+	                    }
                     } else {
                         pd.statusbar.hide("slow");
                         pd.statusbar.remove();
