@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 3.0.4
+ * version: 3.0.5
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -71,9 +71,10 @@
             s.dragDrop = false;
         }
 
+        
         var obj = this;
 
-        var uploadLabel = $('<label for="" >' + $(this).html() + '</label>');
+        var uploadLabel = $('<div>' + $(this).html() + '</div>');
         $(uploadLabel).addClass(s.uploadButtonClass);
 
         //wait form ajax Form plugin and initialize		
@@ -300,13 +301,22 @@
 
 
             });
+            
+	         form.css({'margin':0,'padding':0});
+            var uwidth=$(uploadLabel).width()+10;
+            if(uwidth == 10)
+            	uwidth =120;
+            	
+            var uheight=uploadLabel.height()+10;
+            if(uheight == 10)
+            	uheight = 35;
 
-			uploadLabel.css({position: 'relative',overflow:'hidden'});
-			fileInput.css({position: 'absolute',  
-							'top': '-5px',
-							'width': '150px',  
-							'height':'80px',
-							'left': '-5px',
+			uploadLabel.css({position: 'relative',overflow:'hidden',cursor:'default'});
+			fileInput.css({position: 'absolute','cursor':'pointer',  
+							'top': '0px',
+							'width': uwidth,  
+							'height':uheight,
+							'left': '0px',
 							'z-index': '100',
 							'opacity': '0.0',
 							'filter':'alpha(opacity=0)',
@@ -314,7 +324,7 @@
 							'-khtml-opacity':'0.0',
 							'-moz-opacity':'0.0'
 							});
-         form.appendTo(uploadLabel);
+	         form.appendTo(uploadLabel);
 
             //dont hide it, but move it to 
            /* form.css({
