@@ -256,7 +256,13 @@
                 fileInputStr = "<input type='file' id='" + fileUploadId + "' name='" + s.fileName + "' multiple/>";
             }
             var fileInput = $(fileInputStr).appendTo(form);
-
+			/**
+				Problem: when user selects same non-allowed file 2 times or more, 
+				error alert is not prompted. The below code fixes that.
+			**/
+			fileInput.on("click", function (){this.value = null;});
+			/** end fix **/
+			
             fileInput.change(function () {
 
                 obj.errorLog.html("");
