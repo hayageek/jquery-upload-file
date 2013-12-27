@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 3.0.5
+ * version: 3.0.6
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -39,6 +39,10 @@
             showError: true,
             showStatusAfterSuccess: true,
             showStatusAfterError: true,
+            showFileCounter:true,
+            fileCounterStyle:"). ",
+            showProgress:false,
+            onSelect:function(files){ return true;},            
             onSubmit: function (files, xhr) {},
             onSuccess: function (files, response, xhr) {},
             onError: function (files, status, message) {},
@@ -142,9 +146,11 @@
                 obj.errorLog.html("");
                 var files = e.originalEvent.dataTransfer.files;
                 if (!s.multiple && files.length > 1) {
-                    if (s.showError) $("<div><font color='red'>" + s.multiDragErrorStr + "</font></div>").appendTo(obj.errorLog);
+                    if (s.showError) $("<div style='color:red;'>" + s.multiDragErrorStr + "</div>").appendTo(obj.errorLog);
                     return;
                 }
+                if(s.onSelect(files) == false)
+                	return;
                 serializeAndUploadFiles(s, obj, files);
             });
 
@@ -198,11 +204,11 @@
         function serializeAndUploadFiles(s, obj, files) {
             for (var i = 0; i < files.length; i++) {
                 if (!isFileTypeAllowed(obj, s, files[i].name)) {
-                    if (s.showError) $("<div><font color='red'><b>" + files[i].name + "</b> " + s.extErrorStr + s.allowedTypes + "</font></div>").appendTo(obj.errorLog);
+                    if (s.showError) $("<div style='color:red;'><b>" + files[i].name + "</b> " + s.extErrorStr + s.allowedTypes + "</div>").appendTo(obj.errorLog);
                     continue;
                 }
                 if (s.maxFileSize != -1 && files[i].size > s.maxFileSize) {
-                    if (s.showError) $("<div><font color='red'><b>" + files[i].name + "</b> " + s.sizeErrorStr + getSizeStr(s.maxFileSize) + "</font></div>").appendTo(obj.errorLog);
+                    if (s.showError) $("<div style='color:red;'><b>" + files[i].name + "</b> " + s.sizeErrorStr + getSizeStr(s.maxFileSize) + "</div>").appendTo(obj.errorLog);
                     continue;
                 }
                 var ts = s;
@@ -221,7 +227,13 @@
                 ts.fileData = fd;
 
                 var pd = new createProgressDiv(obj, s);
-                pd.filename.html(obj.fileCounter + "). " + files[i].name);
+                var fileNameStr="";
+            	if(s.showFileCounter)
+            		fileNameStr = obj.fileCounter + s.fileCounterStyle + files[i].name
+            	else
+            		fileNameStr = files[i].name;
+            		
+                pd.filename.html(fileNameStr);
                 var form = $("<form style='display:block; position:absolute;left: 150px;' class='" + obj.formGroup + "' method='" + s.method + "' action='" + s.url + "' enctype='" + s.enctype + "'></form>");
                 form.appendTo('body');
                 var fileArray = [];
@@ -262,19 +274,27 @@
                 obj.errorLog.html("");
                 var fileExtensions = s.allowedTypes.toLowerCase().split(",");
                 var fileArray = [];
-
                 if (this.files) //support reading files
                 {
-                    for (i = 0; i < this.files.length; i++) {
+                    for (i = 0; i < this.files.length; i++) 
+                    {
                         fileArray.push(this.files[i].name);
                     }
+                   
+                    if(s.onSelect(this.files) == false)
+	                	return;
                 } else {
                     var filenameStr = $(this).val();
+                    var flist = [];
                     fileArray.push(filenameStr);
                     if (!isFileTypeAllowed(obj, s, filenameStr)) {
-                        if (s.showError) $("<div><font color='red'><b>" + filenameStr + "</b> " + s.extErrorStr + s.allowedTypes + "</font></div>").appendTo(obj.errorLog);
+                        if (s.showError) $("<div style='color:red;'><b>" + filenameStr + "</b> " + s.extErrorStr + s.allowedTypes + "</div>").appendTo(obj.errorLog);
                         return;
                     }
+                    //fallback for browser without FileAPI
+                    flist.push({name:filenameStr,size:'NA'});
+                    if(s.onSelect(flist) == false)
+	                	return;
 
                 }
                 uploadLabel.unbind("click");
@@ -290,7 +310,10 @@
                 } else {
                     var fileList = "";
                     for (var i = 0; i < fileArray.length; i++) {
-                        fileList += obj.fileCounter + "). " + fileArray[i] + "<br>";
+		            	if(s.showFileCounter)
+        		    		fileList += obj.fileCounter + s.fileCounterStyle + fileArray[i]+"<br>";
+            			else
+		            		fileList += fileArray[i]+"<br>";;
                         obj.fileCounter++;
                     }
                     var pd = new createProgressDiv(obj, s);
@@ -386,10 +409,11 @@
                             }
                         }
                         obj.tCounter += fileArray.length;
-                        window.setTimeout(checkPendingUploads, 1000); //not so critical
+                        //window.setTimeout(checkPendingUploads, 1000); //not so critical
+                        checkPendingUploads();
                         return true;
                     }
-                    pd.statusbar.append("<div><font color='red'>" + s.uploadErrorStr + "</font></div>");
+                    pd.statusbar.append("<div style='color:red;'>" + s.uploadErrorStr + "</div>");
                     pd.cancel.show()
                     form.remove();
                     pd.cancel.click(function () {
@@ -414,12 +438,27 @@
                     } else pd.progressbar.width('1%'); //Fix for small files
                 },
                 uploadProgress: function (event, position, total, percentComplete) {
+		            //Fix for smaller file uploads in MAC
+                	if(percentComplete > 98) percentComplete =98; 
+                	
                     var percentVal = percentComplete + '%';
                     if (percentComplete > 1) pd.progressbar.width(percentVal)
+                    if(s.showProgress) 
+                    {
+                    	pd.progressbar.html(percentVal);
+                    	pd.progressbar.css('text-align', 'center');
+                    }
+	                
                 },
                 success: function (data, message, xhr) {
                     obj.responses.push(data);
                     pd.progressbar.width('100%')
+                    if(s.showProgress)
+                    { 
+                    	pd.progressbar.html('100%');
+                    	pd.progressbar.css('text-align', 'center');
+                    }	
+	                
                     pd.abort.hide();
                     s.onSuccess.call(this, fileArray, data, xhr);
                     if (s.showStatusAfterSuccess) {
@@ -460,7 +499,7 @@
                         s.onError.call(this, fileArray, status, errMsg);
                         if (s.showStatusAfterError) {
                             pd.progressDiv.hide();
-                            pd.statusbar.append("<font color='red'>ERROR: " + errMsg + "</font>");
+                            pd.statusbar.append("<span style='color:red;'>ERROR: " + errMsg + "</span>");
                         } else {
                             pd.statusbar.hide();
                             pd.statusbar.remove();

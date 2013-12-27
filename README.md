@@ -118,6 +118,24 @@ If it is set to <code>false</code>, status box will be hidden after the upload i
 ###showError
 If it is set to <code>false</code>, Errors are not shown to user. Default is<code>true</code> 
 
+###showFileCounter
+If it is set to <code>true</code>, File counter is shown with name. Default is<code>true</code>
+File Counter style can be changed using <code>fileCounterStyle</code>. Default is <code>). </code>
+
+###showProgress
+If it is set to <code>true</code>, Progress precent is shown to user. Default is<code>false</code> 
+
+
+###onSelect
+callback back to be invoked when the file selected.   
+````javascript
+onSelect:function(files)
+{
+	files[0].name;
+	files[0].size;
+	return true; //to allow file submission.
+}
+````
 ###onSubmit
 callback back to be invoked before the file upload.   
 ````javascript

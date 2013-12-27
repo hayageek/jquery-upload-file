@@ -28,7 +28,8 @@ display: inline-block
 background-color: #0ba1b5;
 width: 0;
 height: 20px;
-border-radius: 3px
+border-radius: 3px;
+color:#FFFFFF;
 }
 .ajax-file-upload-percent {
 position: absolute;
