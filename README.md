@@ -75,6 +75,9 @@ dynamicFormData: function()
 ###maxFileSize
 Allowed Maximum file Size in bytes.
 
+###maxFileCount
+Allowed Maximum number of files to be uploaded 
+
 
 ###returnType 
 Expected data type of the response. One of: null, 'xml', 'script', or 'json'. The dataType option provides a means for specifying how the server response should be handled. This maps directly to jQuery's dataType method. The following values are supported:

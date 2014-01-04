@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 3.1.0
+ * version: 3.1.1
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -12,7 +12,6 @@
     var feature = {};
     feature.fileapi = $("<input type='file'/>").get(0).files !== undefined;
     feature.formdata = window.FormData !== undefined;
-
     $.fn.uploadFile = function (options) {
         // This is the easiest way to have default options.
         var s = $.extend({
@@ -29,6 +28,7 @@
                 return {};
             },
             maxFileSize: -1,
+            maxFileCount:-1,
             multiple: true,
             dragDrop: true,
             autoSubmit: true,
@@ -57,10 +57,13 @@
             multiDragErrorStr: "Multiple File Drag &amp; Drop is not allowed.",
             extErrorStr: "is not allowed. Allowed extensions: ",
             sizeErrorStr: "is not allowed. Allowed Max size: ",
-            uploadErrorStr: "Upload is not allowed"
+            uploadErrorStr: "Upload is not allowed",
+            maxFileCountErrorStr: " is not allowed. Maximum allowed files are:"
+            
         }, options);
 
         this.fileCounter = 1;
+        this.selectedFiles=0;
         this.fCounter = 0; //failed uploads
         this.sCounter = 0; //success uploads
         this.tCounter = 0; //total uploads
@@ -74,10 +77,12 @@
         {
             s.dragDrop = false;
         }
+		if(!feature.formdata)
+		{
+			s.multiple = false;
+		}
 
-        
-        var obj = this;
-
+       var obj = this;
         var uploadLabel = $('<div>' + $(this).html() + '</div>');
         $(uploadLabel).addClass(s.uploadButtonClass);
 
@@ -211,6 +216,12 @@
                     if (s.showError) $("<div style='color:red;'><b>" + files[i].name + "</b> " + s.sizeErrorStr + getSizeStr(s.maxFileSize) + "</div>").appendTo(obj.errorLog);
                     continue;
                 }
+                if(s.maxFileCount != -1 && obj.selectedFiles >= s.maxFileCount)
+                {
+                    if (s.showError) $("<div style='color:red;'><b>" + files[i].name + "</b> " + s.maxFileCountErrorStr + s.maxFileCount + "</div>").appendTo(obj.errorLog);
+                	continue;
+                }
+                obj.selectedFiles++;
                 var ts = s;
                 var fd = new FormData();
                 var fileName = s.fileName.replace("[]", "");
@@ -253,6 +264,22 @@
             }
             return true;
         }
+	function updateFileCounter(s,obj)
+		{
+			if(s.showFileCounter)
+			{
+			var count=$(".ajax-file-upload-filename").length;
+			obj.fileCounter=count+1;
+			$(".ajax-file-upload-filename").each(function (i, items) 
+             {
+             	var arr=$(this).html().split(s.fileCounterStyle);
+             	var fileNum = parseInt(arr[0]) -1;//decrement;
+             	var name = count+s.fileCounterStyle+arr[1];
+             	$(this).html(name);
+             	count--;
+			});
+			}
+		}
 
         function createCutomInputFile(obj, group, s, uploadLabel) {
 
@@ -297,6 +324,8 @@
 	                	return;
 
                 }
+                updateFileCounter(s,obj);
+                
                 uploadLabel.unbind("click");
                 form.hide();
                 createCutomInputFile(obj, group, s, uploadLabel);
@@ -309,13 +338,22 @@
                     serializeAndUploadFiles(s, obj, files);
                 } else {
                     var fileList = "";
-                    for (var i = 0; i < fileArray.length; i++) {
+                    for (var i = 0; i < fileArray.length; i++) 
+                    {
 		            	if(s.showFileCounter)
         		    		fileList += obj.fileCounter + s.fileCounterStyle + fileArray[i]+"<br>";
             			else
 		            		fileList += fileArray[i]+"<br>";;
                         obj.fileCounter++;
+	                
                     }
+                    if(s.maxFileCount != -1 && (obj.selectedFiles+fileArray.length) > s.maxFileCount)
+		            {
+    		                if (s.showError) $("<div style='color:red;'><b>" + fileList + "</b> " + s.maxFileCountErrorStr + s.maxFileCount + "</div>").appendTo(obj.errorLog);
+        		        	return;
+            		}
+					obj.selectedFiles += fileArray.length;
+                    
                     var pd = new createProgressDiv(obj, s);
                     pd.filename.html(fileList);
                     ajaxFormSubmit(form, s, pd, fileArray, obj);
@@ -430,6 +468,7 @@
                         pd.abort.show();
                         pd.abort.click(function () {
                             xhr.abort();
+                            obj.selectedFiles -= fileArray.length; //reduce selected File count
                         });
                     }
                     if (!feature.formdata) //For iframe based push
@@ -475,7 +514,11 @@
                         {
                         	pd.del.show();
                         	 pd.del.click(function () {
+                        	 	pd.statusbar.hide().remove();
                         		if(s.deleteCallback) s.deleteCallback.call(this, data,pd);
+                        	    obj.selectedFiles -= fileArray.length; //reduce selected File count
+                        	    updateFileCounter(s,obj);
+                        		
                             });
                         }
                         else
@@ -494,7 +537,9 @@
                     pd.abort.hide();
                     if (xhr.statusText == "abort") //we aborted it
                     {
-                        pd.statusbar.hide("slow");
+                        pd.statusbar.hide("slow").remove();
+                        updateFileCounter(s,obj);
+
                     } else {
                         s.onError.call(this, fileArray, status, errMsg);
                         if (s.showStatusAfterError) {
@@ -519,6 +564,8 @@
                     pd.cancel.click(function () {
                         form.remove();
                         pd.statusbar.remove();
+                        obj.selectedFiles -= fileArray.length; //reduce selected File count
+                        updateFileCounter(s,obj);
                     });
                 }
                 form.ajaxForm(options);
