@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 3.1.1
+ * version: 3.1.2
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -549,6 +549,7 @@
                             pd.statusbar.hide();
                             pd.statusbar.remove();
                         }
+						obj.selectedFiles -= fileArray.length; //reduce selected File count                        
                     }
 
                     form.remove();
