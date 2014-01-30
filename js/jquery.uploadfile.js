@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 3.1.3
+ * version: 3.1.4
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -61,7 +61,8 @@
             extErrorStr: "is not allowed. Allowed extensions: ",
             sizeErrorStr: "is not allowed. Allowed Max size: ",
             uploadErrorStr: "Upload is not allowed",
-            maxFileCountErrorStr: " is not allowed. Maximum allowed files are:"
+            maxFileCountErrorStr: " is not allowed. Maximum allowed files are:",
+            showQueueDiv:false
 
         }, options);
 
@@ -422,7 +423,10 @@
             this.cancel = $("<div class='ajax-file-upload-red'>" + s.cancelStr + "</div>").appendTo(this.statusbar).hide();
             this.done = $("<div class='ajax-file-upload-green'>" + s.doneStr + "</div>").appendTo(this.statusbar).hide();
             this.del = $("<div class='ajax-file-upload-red'>" + s.deletelStr + "</div>").appendTo(this.statusbar).hide();
-            obj.errorLog.after(this.statusbar);
+			if(s.showQueueDiv)
+	            $("#"+s.showQueueDiv).append(this.statusbar);
+	        else
+	            obj.errorLog.after(this.statusbar);            
             return this;
         }
 
