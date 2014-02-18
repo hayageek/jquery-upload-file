@@ -114,6 +114,11 @@
                 if($(this).is('form')) $(this).submit();
             });
         }
+
+        this.getFileCount = function () {
+            return obj.selectedFiles;
+            
+        }
         this.stopUpload = function () {
             $(".ajax-file-upload-red").each(function (i, items) {
                 if($(this).hasClass(obj.formGroup)) $(this).click();
