@@ -1,7 +1,6 @@
 .ajax-file-upload-statusbar {
 border: 1px solid #0ba1b5;
 margin-top: 10px;
-width: 420px;
 margin-right: 10px;
 margin: 5px;
 -moz-border-radius: 4px;
@@ -117,7 +116,6 @@ margin-right:5px;
 {
 
 	border:2px dotted #A5A5C7;
-	width:420px;
 	color: #DADCE3;
 	text-align:left;
 	vertical-align:middle;

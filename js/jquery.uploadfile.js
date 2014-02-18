@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 3.1.4
+ * version: 3.1.5
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -43,12 +43,16 @@
             fileCounterStyle: "). ",
             showProgress: false,
             nestedForms: true,
+            showDownload:false,
+            onLoad:function(obj){},
             onSelect: function (files) {
                 return true;
             },
             onSubmit: function (files, xhr) {},
-            onSuccess: function (files, response, xhr) {},
-            onError: function (files, status, message) {},
+            onSuccess: function (files, response, xhr,pd) {},
+            onError: function (files, status, message,pd) {},
+            onCancel: function(files,pd) {},
+            downloadCallback:false,
             deleteCallback: false,
             afterUploadAll: false,
             uploadButtonClass: "ajax-file-upload",
@@ -62,8 +66,10 @@
             sizeErrorStr: "is not allowed. Allowed Max size: ",
             uploadErrorStr: "Upload is not allowed",
             maxFileCountErrorStr: " is not allowed. Maximum allowed files are:",
-            showQueueDiv:false
-
+            downloadStr:"Download",
+            showQueueDiv:false,
+            statusBarWidth:500,
+            dragdropWidth:500
         }, options);
 
         this.fileCounter = 1;
@@ -94,7 +100,7 @@
             if($.fn.ajaxForm) {
 
                 if(s.dragDrop) {
-                    var dragDrop = $('<div class="ajax-upload-dragdrop" style="vertical-align:top;"></div>');
+                    var dragDrop = $('<div class="ajax-upload-dragdrop" style="vertical-align:top;"></div>').width(s.dragdropWidth);
                     $(obj).before(dragDrop);
                     $(dragDrop).append(uploadLabel);
                     $(dragDrop).append($(s.dragDropStr));
@@ -103,7 +109,7 @@
                 } else {
                     $(obj).before(uploadLabel);
                 }
-
+                s.onLoad.call(this,obj);
                 createCutomInputFile(obj, formGroup, s, uploadLabel);
 
             } else window.setTimeout(checkAjaxFormLoaded, 10);
@@ -120,9 +126,45 @@
             
         }
         this.stopUpload = function () {
-            $(".ajax-file-upload-red").each(function (i, items) {
+            $(".ajax-file-upload-abort").each(function (i, items) {
                 if($(this).hasClass(obj.formGroup)) $(this).click();
             });
+        }
+        this.cancelAll = function()
+        {
+            $(".ajax-file-upload-cancel").each(function (i, items) {
+                if($(this).hasClass(obj.formGroup)) $(this).click();
+            });
+        }
+        
+        //This is for showing Old files to user.
+        this.createProgress = function(filename)
+        {
+        	var pd =new createProgressDiv(this,s);
+        	pd.progressDiv.show();
+        	pd.progressbar.width('100%');
+        	pd.filename.html(obj.fileCounter + s.fileCounterStyle + filename);
+        	obj.fileCounter++;
+        	obj.selectedFiles++;
+        	if(s.showDownload)
+        	{
+	        	pd.download.show();
+	            pd.download.click(function()
+	        	{
+    	    		if(s.downloadCallback) s.downloadCallback.call(obj,[filename]);
+        		});
+	        }
+        	pd.del.show();
+        	
+        	pd.del.click(function()
+        	{
+        		pd.statusbar.hide().remove();
+        		var arr = [filename];
+        		if(s.deleteCallback) s.deleteCallback.call(this,arr,pd);
+        		obj.selectedFiles -= 1;
+				updateFileCounter(s,obj);
+        	});
+
         }
 
         this.getResponses = function () {
@@ -371,12 +413,6 @@
                     'margin': 0,
                     'padding': 0
                 });
-                var uwidth = $(uploadLabel).width(); //fix for twitterbootstrap
-                if(uwidth <= 0) uwidth = 120;
-
-                var uheight = uploadLabel.height();
-                if(uheight <= 0) uheight = 25;
-
                 uploadLabel.css({
                     position: 'relative',
                     overflow: 'hidden',
@@ -386,8 +422,8 @@
                     position: 'absolute',
                     'cursor': 'pointer',
                     'top': '0px',
-                    'width': uwidth,
-                    'height': uheight,
+                    'width': '100%',
+                    'height': '100%',
                     'left': '0px',
                     'z-index': '100',
                     'opacity': '0.0',
@@ -420,13 +456,14 @@
 
 
         function createProgressDiv(obj, s) {
-            this.statusbar = $("<div class='ajax-file-upload-statusbar'></div>");
+            this.statusbar = $("<div class='ajax-file-upload-statusbar'></div>").width(s.statusBarWidth);
             this.filename = $("<div class='ajax-file-upload-filename'></div>").appendTo(this.statusbar);
             this.progressDiv = $("<div class='ajax-file-upload-progress'>").appendTo(this.statusbar).hide();
             this.progressbar = $("<div class='ajax-file-upload-bar " + obj.formGroup + "'></div>").appendTo(this.progressDiv);
-            this.abort = $("<div class='ajax-file-upload-red " + obj.formGroup + "'>" + s.abortStr + "</div>").appendTo(this.statusbar).hide();
-            this.cancel = $("<div class='ajax-file-upload-red'>" + s.cancelStr + "</div>").appendTo(this.statusbar).hide();
+            this.abort = $("<div class='ajax-file-upload-red ajax-file-upload-abort " + obj.formGroup + "'>" + s.abortStr + "</div>").appendTo(this.statusbar).hide();
+            this.cancel = $("<div class='ajax-file-upload-red ajax-file-upload-cancel "+obj.formGroup +"'>" + s.cancelStr + "</div>").appendTo(this.statusbar).hide();
             this.done = $("<div class='ajax-file-upload-green'>" + s.doneStr + "</div>").appendTo(this.statusbar).hide();
+            this.download = $("<div class='ajax-file-upload-green'>"+s.downloadStr+"</div>").appendTo(this.statusbar).hide();            
             this.del = $("<div class='ajax-file-upload-red'>" + s.deletelStr + "</div>").appendTo(this.statusbar).hide();
 			if(s.showQueueDiv)
 	            $("#"+s.showQueueDiv).append(this.statusbar);
@@ -471,6 +508,9 @@
                     form.remove();
                     pd.cancel.click(function () {
                         pd.statusbar.remove();
+                        s.onCancel.call(obj,fileArray,pd);
+                        obj.selectedFiles -= fileArray.length; //reduce selected File count
+                        updateFileCounter(s, obj);
                     });
                     return false;
                 },
@@ -512,7 +552,7 @@
                     }
 
                     pd.abort.hide();
-                    s.onSuccess.call(this, fileArray, data, xhr);
+                    s.onSuccess.call(this, fileArray, data, xhr,pd);
                     if(s.showStatusAfterSuccess) {
                         if(s.showDone) {
                             pd.done.show();
@@ -540,6 +580,14 @@
                         pd.statusbar.remove();
 
                     }
+                    if(s.showDownload)
+                    {
+	                    pd.download.show();
+    	                pd.download.click(function()
+        	            {
+            	        	if(s.downloadCallback) s.downloadCallback(data);
+                	    });
+                    }
                     form.remove();
                     obj.sCounter += fileArray.length;
                 },
@@ -551,7 +599,7 @@
                         updateFileCounter(s, obj);
 
                     } else {
-                        s.onError.call(this, fileArray, status, errMsg);
+                        s.onError.call(this, fileArray, status, errMsg,pd);
                         if(s.showStatusAfterError) {
                             pd.progressDiv.hide();
                             pd.statusbar.append("<span style='color:red;'>ERROR: " + errMsg + "</span>");
@@ -575,6 +623,7 @@
                     pd.cancel.click(function () {
                         form.remove();
                         pd.statusbar.remove();
+                        s.onCancel.call(obj,fileArray,pd);
                         obj.selectedFiles -= fileArray.length; //reduce selected File count
                         updateFileCounter(s, obj);
                     });

@@ -36,6 +36,12 @@ Aborts all the uploads
 ````javascript
 uploadObj.stopUpload();
 ````
+###cancelAll()
+Cancel all the selected files ( when autoSubmit:false)
+````javascript
+uploadObj.cancelAll();
+````
+
 
 #getResponses()
 Responses from the server are collected  and returned.
@@ -114,7 +120,11 @@ If it is set to <code>false</code>, Done button is hidden when the upload is com
 ###showDelete
 If it is set to <code>true</code>, Delete button is shown when the upload is completed. Default is<code>false</code>,You need to 
 implement deleteCallback() function.
-  
+
+###showDownload
+If it is set to <code>true</code>, Download button is shown when the upload is completed. Default is<code>false</code>,You need to 
+implement downloadCallback() function.
+
 ###showStatusAfterSuccess 
 If it is set to <code>false</code>, status box will be hidden after the upload is done. Default is<code>true</code> 
 
@@ -128,6 +138,43 @@ File Counter style can be changed using <code>fileCounterStyle</code>. Default i
 ###showProgress
 If it is set to <code>true</code>, Progress precent is shown to user. Default is<code>false</code> 
 
+###showQueueDiv
+Using this you can place the progressbar wherever you want. 
+````javascript
+showQueueDiv: "output"
+````
+progress bar is added to a div with id <code>output</div>
+
+
+###statusBarWidth
+Using this you can set status bar width
+
+###dragdropWidth
+Using this you can set drag and drop div width
+
+###onSelect
+callback back to be invoked when the plugin is initialized. This can be used to show existing files..   
+````javascript
+    onLoad:function(obj)
+    {
+    	$.ajax({
+	    	cache: false,
+		    url: "load.php",
+	    	dataType: "json",
+		    success: function(data) 
+		    {
+			    for(var i=0;i<data.length;i++)
+    	    	{
+        			obj.createProgress(data[i]);
+        		}
+	        }
+		});
+   },
+
+
+````
+
+onLoad:function(obj){},
 
 ###onSelect
 callback back to be invoked when the file selected.   
@@ -152,7 +199,7 @@ onSubmit:function(files)
 ###onSuccess  
 callback to be invoked when the upload is successful. 
 ````javascript
-onSuccess:function(files,data,xhr)
+onSuccess:function(files,data,xhr,pd)
 {
 	//files: list of files
 	//data: response from server
@@ -171,11 +218,20 @@ afterUploadAll:function(obj)
 ###onError  
 callback  to be invoked when the upload is failed. 
 ````javascript
-onError: function(files,status,errMsg)
+onError: function(files,status,errMsg,pd)
 {
 	//files: list of files
 	//status: error status
 	//errMsg: error message
+}
+````
+###onCancel  
+callback  to be invoked when user cancel the file ( when autosubmit:false)
+````javascript
+onCancel: function(files,pd)
+{
+	//files: list of files
+	//pd:  progress div
 }
 ````
 ###deleteCallback  
@@ -194,6 +250,15 @@ deleteCallback: function(data,pd)
 	 }		
 	pd.statusbar.hide(); //You choice to hide/not.
 
+}
+````
+
+###downloadCallback  
+callback  to be invoked when the user clicks on Download button.
+````javascript
+downloadCallback:function(files,pd)
+{
+	location.href="download.php?filename="+files[0];
 }
 ````
 
