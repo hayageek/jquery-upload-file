@@ -3,7 +3,13 @@ $output_dir = "uploads/";
 if(isset($_FILES["myfile"]))
 {
 	$ret = array();
-
+	
+//	This is for custom errors;	
+/*	$custom_error= array();
+	$custom_error['jquery-upload-file-error']="File already exists";
+	echo json_encode($custom_error);
+	die();
+*/
 	$error =$_FILES["myfile"]["error"];
 	//You need to handle  both cases
 	//If Any browser does not support serializing of multiple files using FormData() 

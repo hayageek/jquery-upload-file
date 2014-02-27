@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 3.1.5
+ * version: 3.1.6
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -22,6 +22,9 @@
             formData: null,
             returnType: null,
             allowedTypes: "*",
+			//For list of acceptFiles
+			// http://stackoverflow.com/questions/11832930/html-input-file-accept-attribute-file-type-csv
+            acceptFiles: "*",
             fileName: "file",
             formData: {},
             dynamicFormData: function () {
@@ -67,6 +70,7 @@
             uploadErrorStr: "Upload is not allowed",
             maxFileCountErrorStr: " is not allowed. Maximum allowed files are:",
             downloadStr:"Download",
+            customErrorKeyStr:"jquery-upload-file-error",
             showQueueDiv:false,
             statusBarWidth:500,
             dragdropWidth:500
@@ -135,6 +139,11 @@
             $(".ajax-file-upload-cancel").each(function (i, items) {
                 if($(this).hasClass(obj.formGroup)) $(this).click();
             });
+        }
+        this.update= function(settings)
+        {
+        	//update new settings
+        	s = $.extend(s,settings);
         }
         
         //This is for showing Old files to user.
@@ -333,14 +342,14 @@
             var fileUploadId = "ajax-upload-id-" + (new Date().getTime());
 
             var form = $("<form method='" + s.method + "' action='" + s.url + "' enctype='" + s.enctype + "'></form>");
-            var fileInputStr = "<input type='file' id='" + fileUploadId + "' name='" + s.fileName + "'/>";
+            var fileInputStr = "<input type='file' id='" + fileUploadId + "' name='" + s.fileName + "' accept='"+s.acceptFiles+"'/>";
             if(s.multiple) {
                 if(s.fileName.indexOf("[]") != s.fileName.length - 2) // if it does not endwith
                 {
                     s.fileName += "[]";
                 }
-                fileInputStr = "<input type='file' id='" + fileUploadId + "' name='" + s.fileName + "' multiple/>";
-            }
+                fileInputStr = "<input type='file' id='" + fileUploadId + "' name='" + s.fileName + "' accept='"+s.acceptFiles+"' multiple/>";
+            }            
             var fileInput = $(fileInputStr).appendTo(form);
 
             fileInput.change(function () {
@@ -544,6 +553,26 @@
 
                 },
                 success: function (data, message, xhr) {
+                
+                	//For custom errors.
+                	if(s.returnType == "json" && $.type(data) == "object" 
+                	&& data.hasOwnProperty(s.customErrorKeyStr))
+                	{
+	                	pd.abort.hide();
+                		var msg = data[s.customErrorKeyStr];
+                		s.onError.call(this, fileArray, 200, msg,pd);
+                        if(s.showStatusAfterError) {
+                            pd.progressDiv.hide();
+                            pd.statusbar.append("<span style='color:red;'>ERROR: " + msg + "</span>");
+                        } else {
+                            pd.statusbar.hide();
+                            pd.statusbar.remove();
+                        }
+                        obj.selectedFiles -= fileArray.length; //reduce selected File count                        
+	                    form.remove();
+    	                obj.fCounter += fileArray.length;
+						  return;
+	               	}
                     obj.responses.push(data);
                     pd.progressbar.width('100%')
                     if(s.showProgress) {

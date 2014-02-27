@@ -2,6 +2,7 @@
 if(isset($_GET['filename']))
 {
 $fileName=$_GET['filename'];
+$fileName=str_replace("..",".",$fileName); //required. if somebody is trying parent folder files
 $file = "uploads/".$fileName;
 $file = str_replace("..","",$file);
 if (file_exists($file)) {

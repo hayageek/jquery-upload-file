@@ -95,6 +95,11 @@ Expected data type of the response. One of: null, 'xml', 'script', or 'json'. Th
 
 ###allowedTypes 
 List of comma separated file extensions: Default is <code>"*"</code>. Example: <code>"jpg,png,gif"</code> 
+
+###acceptFiles 
+accept MIME type for file browse dialog. Default is <code>"*"</code>. Example: <code>"image/*"</code>  
+check this for full list : http://stackoverflow.com/questions/11832930/html-input-file-accept-attribute-file-type-csv
+
    
 ###fileName 
 Name of the file input field. Default is <code>file</code>
@@ -151,6 +156,13 @@ Using this you can set status bar width
 
 ###dragdropWidth
 Using this you can set drag and drop div width
+
+###update
+update plugin options runtime.
+````javascript
+uploadObj.update({autoSubmit:true,maxFileCount:3,showDownload:false});
+````
+
 
 ###onSelect
 callback back to be invoked when the plugin is initialized. This can be used to show existing files..   
@@ -263,5 +275,13 @@ downloadCallback:function(files,pd)
 ````
 
 
+--- Custom Errors
+you can send custom errors from server. like "File exists".
+for custom errors,expected json object from server is:
+````javascript
 
+{"jquery-upload-file-error":"File already exists"}
+
+
+````
 
