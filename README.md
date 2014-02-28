@@ -276,7 +276,7 @@ downloadCallback:function(files,pd)
 
 
 --- 
-Custom Errors
+#Custom Errors
 you can send custom errors from server. like "File exists".
 for custom errors,expected json object from server is:
 ````javascript
