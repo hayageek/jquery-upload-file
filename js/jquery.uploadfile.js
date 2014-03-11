@@ -73,7 +73,10 @@
             customErrorKeyStr:"jquery-upload-file-error",
             showQueueDiv:false,
             statusBarWidth:500,
-            dragdropWidth:500
+            dragdropWidth:500,
+			showPreview: true,
+			previewHeight: "auto", 
+			previewWidth: "100%"
         }, options);
 
         this.fileCounter = 1;
@@ -307,10 +310,8 @@
                 form.appendTo('body');
                 var fileArray = [];
                 fileArray.push(files[i].name);
-                ajaxFormSubmit(form, ts, pd, fileArray, obj);
+                ajaxFormSubmit(form, ts, pd, fileArray, obj, files[i]);
                 obj.fileCounter++;
-
-
             }
         }
 
@@ -322,6 +323,16 @@
             }
             return true;
         }
+		
+		function getSrcToPreview(file, obj) {
+			if (file) {
+				var reader = new FileReader();
+				reader.onload = function (e){
+					obj.attr('src',e.target.result);
+				};
+				reader.readAsDataURL(file);
+			}
+		}
 
         function updateFileCounter(s, obj) {
             if(s.showFileCounter) {
@@ -410,7 +421,7 @@
 
                     var pd = new createProgressDiv(obj, s);
                     pd.filename.html(fileList);
-                    ajaxFormSubmit(form, s, pd, fileArray, obj);
+                    ajaxFormSubmit(form, s, pd, fileArray, obj, null);
                 }
 
 
@@ -466,6 +477,7 @@
 
         function createProgressDiv(obj, s) {
             this.statusbar = $("<div class='ajax-file-upload-statusbar'></div>").width(s.statusBarWidth);
+			this.preview = $("<img class='ajax-file-upload-preview'></img>").width(s.previewWidth).height(s.previewHeight).appendTo(this.statusbar);
             this.filename = $("<div class='ajax-file-upload-filename'></div>").appendTo(this.statusbar);
             this.progressDiv = $("<div class='ajax-file-upload-progress'>").appendTo(this.statusbar).hide();
             this.progressbar = $("<div class='ajax-file-upload-bar " + obj.formGroup + "'></div>").appendTo(this.progressDiv);
@@ -482,7 +494,7 @@
         }
 
 
-        function ajaxFormSubmit(form, s, pd, fileArray, obj) {
+        function ajaxFormSubmit(form, s, pd, fileArray, obj, file) {
             var currentXHR = null;
             var options = {
                 cache: false,
@@ -644,6 +656,11 @@
 
                 }
             };
+			
+			if (s.showPreview && file != null) {
+				if(file.type.toLowerCase().split("/").shift() == "image") getSrcToPreview(file, pd.preview);
+			}
+			
             if(s.autoSubmit) {
                 form.ajaxSubmit(options);
             } else {
