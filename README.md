@@ -143,6 +143,15 @@ File Counter style can be changed using <code>fileCounterStyle</code>. Default i
 ###showProgress
 If it is set to <code>true</code>, Progress precent is shown to user. Default is<code>false</code> 
 
+###showPreivew
+If it is set to <code>true</code>, preview is shown to images. Default is<code>false</code> 
+
+###previewHeight
+is used to set preview height. Default is : "auto"
+
+###previewWidth
+is used to set preview width. Default :"100%"
+
 ###showQueueDiv
 Using this you can place the progressbar wherever you want. 
 ````javascript
