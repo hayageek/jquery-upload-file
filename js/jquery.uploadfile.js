@@ -320,6 +320,7 @@
 
         function getSrcToPreview(file, obj) {
             if(file) {
+                obj.show(); 
                 var reader = new FileReader();
                 reader.onload = function (e) {
                     obj.attr('src', e.target.result);
@@ -471,7 +472,7 @@
 
         function createProgressDiv(obj, s) {
             this.statusbar = $("<div class='ajax-file-upload-statusbar'></div>").width(s.statusBarWidth);
-            this.preview = $("<img class='ajax-file-upload-preview'></img>").width(s.previewWidth).height(s.previewHeight).appendTo(this.statusbar);
+            this.preview = $("<img class='ajax-file-upload-preview'></img>").width(s.previewWidth).height(s.previewHeight).appendTo(this.statusbar).hide();
             this.filename = $("<div class='ajax-file-upload-filename'></div>").appendTo(this.statusbar);
             this.progressDiv = $("<div class='ajax-file-upload-progress'>").appendTo(this.statusbar).hide();
             this.progressbar = $("<div class='ajax-file-upload-bar " + obj.formGroup + "'></div>").appendTo(this.progressDiv);
