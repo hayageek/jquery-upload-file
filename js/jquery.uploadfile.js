@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 3.1.7
+ * version: 3.1.8
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -74,7 +74,7 @@
             showQueueDiv: false,
             statusBarWidth: 500,
             dragdropWidth: 500,
-            showPreview: true,
+            showPreview: false,
             previewHeight: "auto",
             previewWidth: "100%"
         }, options);
