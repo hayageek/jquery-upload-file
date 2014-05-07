@@ -173,7 +173,7 @@ uploadObj.update({autoSubmit:true,maxFileCount:3,showDownload:false});
 ````
 
 
-###onSelect
+###onLoad
 callback back to be invoked when the plugin is initialized. This can be used to show existing files..   
 ````javascript
     onLoad:function(obj)
