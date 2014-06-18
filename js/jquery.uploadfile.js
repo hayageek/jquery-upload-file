@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 3.1.8
+ * version: 3.1.9
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -76,7 +76,8 @@
             dragdropWidth: 500,
             showPreview: false,
             previewHeight: "auto",
-            previewWidth: "100%"
+            previewWidth: "100%",
+            uploadFolder:"uploads/"
         }, options);
 
         this.fileCounter = 1;
@@ -155,6 +156,12 @@
             pd.filename.html(obj.fileCounter + s.fileCounterStyle + filename);
             obj.fileCounter++;
             obj.selectedFiles++;
+            if(s.showPreview)
+            {
+	            pd.preview.attr('src',s.uploadFolder+filename);
+    	        pd.preview.show();
+            }
+            
             if(s.showDownload) {
                 pd.download.show();
                 pd.download.click(function () {
