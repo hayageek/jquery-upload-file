@@ -19,8 +19,9 @@
             url: "",
             method: "POST",
             enctype: "multipart/form-data",
-            formData: null,
             returnType: null,
+            allowDuplicates: true,
+            duplicateStrict: false,
             allowedTypes: "*",
             //For list of acceptFiles
             // http://stackoverflow.com/questions/11832930/html-input-file-accept-attribute-file-type-csv
@@ -66,6 +67,7 @@
             doneStr: "Done",
             multiDragErrorStr: "Multiple File Drag &amp; Drop is not allowed.",
             extErrorStr: "is not allowed. Allowed extensions: ",
+            duplicateErrorStr: "is not allowed. File already exists.",
             sizeErrorStr: "is not allowed. Allowed Max size: ",
             uploadErrorStr: "Upload is not allowed",
             maxFileCountErrorStr: " is not allowed. Maximum allowed files are:",
@@ -91,6 +93,7 @@
         this.errorLog = $("<div></div>"); //Writing errors
         this.after(this.errorLog);
         this.responses = [];
+        this.existingFileNames = [];
         if(!feature.formdata) //check drag drop enabled.
         {
             s.dragDrop = false;
@@ -103,7 +106,7 @@
         var uploadLabel = $('<div>' + $(this).html() + '</div>');
         $(uploadLabel).addClass(s.uploadButtonClass);
 
-        //wait form ajax Form plugin and initialize		
+        // wait form ajax Form plugin and initialize
         (function checkAjaxFormLoaded() {
             if($.fn.ajaxForm) {
 
@@ -158,8 +161,8 @@
             obj.selectedFiles++;
             if(s.showPreview)
             {
-	            pd.preview.attr('src',s.uploadFolder+filename);
-    	        pd.preview.show();
+                pd.preview.attr('src',s.uploadFolder+filename);
+                pd.preview.show();
             }
             
             if(s.showDownload) {
@@ -274,6 +277,10 @@
                     if(s.showError) $("<div style='color:red;'><b>" + files[i].name + "</b> " + s.extErrorStr + s.allowedTypes + "</div>").appendTo(obj.errorLog);
                     continue;
                 }
+                if(!s.allowDuplicates && isFileDuplicate(obj, files[i].name)) {
+                    if(s.showError) $("<div style='color:red;'><b>" + files[i].name + "</b> " + s.duplicateErrorStr + "</div>").appendTo(obj.errorLog);
+                    continue;
+                }
                 if(s.maxFileSize != -1 && files[i].size > s.maxFileSize) {
                     if(s.showError) $("<div style='color:red;'><b>" + files[i].name + "</b> " + s.sizeErrorStr + getSizeStr(s.maxFileSize) + "</div>").appendTo(
                         obj.errorLog);
@@ -285,6 +292,7 @@
                     continue;
                 }
                 obj.selectedFiles++;
+                obj.existingFileNames.push(files[i].name);
                 var ts = s;
                 var fd = new FormData();
                 var fileName = s.fileName.replace("[]", "");
@@ -325,9 +333,34 @@
             return true;
         }
 
+        function isFileDuplicate(obj, filename) {
+            var duplicate = false;
+            if (obj.existingFileNames.length) {
+                for (var x=0; x<obj.existingFileNames.length; x++) {
+                    if (obj.existingFileNames[x] == filename
+                        || s.duplicateStrict && obj.existingFileNames[x].toLowerCase() == filename.toLowerCase()
+                    ) {
+                        duplicate = true;
+                    }
+                }
+            }
+            return duplicate;
+        }
+
+        function removeExistingFileName(obj, fileArr) {
+            if (obj.existingFileNames.length) {
+                for (var x=0; x<fileArr.length; x++) {
+                    var pos = obj.existingFileNames.indexOf(fileArr[x]);
+                    if (pos != -1) {
+                        obj.existingFileNames.splice(pos, 1);
+                    }
+                }
+            }
+        }
+
         function getSrcToPreview(file, obj) {
             if(file) {
-                obj.show(); 
+                obj.show();
                 var reader = new FileReader();
                 reader.onload = function (e) {
                     obj.attr('src', e.target.result);
@@ -532,6 +565,7 @@
                     pd.cancel.show()
                     form.remove();
                     pd.cancel.click(function () {
+                        removeExistingFileName(obj, fileArray);
                         pd.statusbar.remove();
                         s.onCancel.call(obj, fileArray, pd);
                         obj.selectedFiles -= fileArray.length; //reduce selected File count
@@ -547,6 +581,7 @@
                     if(s.showAbort) {
                         pd.abort.show();
                         pd.abort.click(function () {
+                            removeExistingFileName(obj, fileArray);
                             xhr.abort();
                             obj.selectedFiles -= fileArray.length; //reduce selected File count
                         });
@@ -582,7 +617,7 @@
                             pd.statusbar.hide();
                             pd.statusbar.remove();
                         }
-                        obj.selectedFiles -= fileArray.length; //reduce selected File count                        
+                        obj.selectedFiles -= fileArray.length; //reduce selected File count
                         form.remove();
                         obj.fCounter += fileArray.length;
                         return;
@@ -648,7 +683,7 @@
                             pd.statusbar.hide();
                             pd.statusbar.remove();
                         }
-                        obj.selectedFiles -= fileArray.length; //reduce selected File count                        
+                        obj.selectedFiles -= fileArray.length; //reduce selected File count
                     }
 
                     form.remove();
@@ -667,6 +702,7 @@
                 if(s.showCancel) {
                     pd.cancel.show();
                     pd.cancel.click(function () {
+                        removeExistingFileName(obj, fileArray);
                         form.remove();
                         pd.statusbar.remove();
                         s.onCancel.call(obj, fileArray, pd);
@@ -682,6 +718,4 @@
         return this;
 
     }
-
-
 }(jQuery));
