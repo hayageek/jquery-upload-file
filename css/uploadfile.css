@@ -80,7 +80,7 @@ margin-right:5px;
 	font-size: 16px;
    font-weight: bold;
 	padding: 15px 20px;
-	cursor:pointer;	
+	cursor:pointer;
 	line-height:20px;
 	height:25px;
 	margin:0 10px 10px 0;
@@ -114,10 +114,17 @@ margin-right:5px;
 
 .ajax-upload-dragdrop
 {
+    border:2px dotted #A5A5C7;
+    color: #DADCE3;
+    text-align:left;
+    vertical-align:middle;
+    padding:10px 10px 0px 10px;
+}
 
-	border:2px dotted #A5A5C7;
-	color: #DADCE3;
-	text-align:left;
-	vertical-align:middle;
-	padding:10px 10px 0px 10px;
+.ajax-upload-dragdrop.state-hover
+{
+    border: 2px solid #A5A5C7;
+}
+.ajax-file-upload-error {
+    color: red;
 }
