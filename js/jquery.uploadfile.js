@@ -62,6 +62,7 @@
             abortButtonClass: "ajax-file-upload-abort",
             cancelButtonClass: "ajax-file-upload-cancel",
             dragDropContainerClass: "ajax-upload-dragdrop",
+            dragDropHoverClass: "state-hover",
             errorClass: "ajax-file-upload-error",
             uploadButtonClass: "ajax-file-upload",
             dragDropStr: "<span><b>Drag &amp; Drop Files</b></span>",
@@ -209,19 +210,19 @@
             ddObj.on('dragenter', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
-                $(this).addClass('state-hover');
+                $(this).addClass(s.dragDropHoverClass);
             });
             ddObj.on('dragover', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
                 var that = $(this);
-                if (that.hasClass(s.dragDropContainerClass) && !that.hasClass('state-hover')) {
-                    that.addClass('state-hover');
+                if (that.hasClass(s.dragDropContainerClass) && !that.hasClass(s.dragDropHoverClass)) {
+                    that.addClass(s.dragDropHoverClass);
                 }
             });
             ddObj.on('drop', function (e) {
-                $(this).removeClass('state-hover');
                 e.preventDefault();
+                $(this).removeClass(s.dragDropHoverClass);
                 obj.errorLog.html("");
                 var files = e.originalEvent.dataTransfer.files;
                 if(!s.multiple && files.length > 1) {
@@ -232,7 +233,7 @@
                 serializeAndUploadFiles(s, obj, files);
             });
             ddObj.on('dragleave', function (e) {
-                $(this).removeClass('state-hover');
+                $(this).removeClass(s.dragDropHoverClass);
             });
 
             $(document).on('dragenter', function (e) {
@@ -244,13 +245,13 @@
                 e.preventDefault();
                 var that = $(this);
                 if (!that.hasClass(s.dragDropContainerClass)) {
-                    that.removeClass('state-hover');
+                    that.removeClass(s.dragDropHoverClass);
                 }
             });
             $(document).on('drop', function (e) {
                 e.stopPropagation();
                 e.preventDefault();
-                $(this).removeClass('state-hover');
+                $(this).removeClass(s.dragDropHoverClass);
             });
 
         }
