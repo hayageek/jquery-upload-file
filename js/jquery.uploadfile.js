@@ -161,7 +161,12 @@
             var pd = new createProgressDiv(this, s);
             pd.progressDiv.show();
             pd.progressbar.width('100%');
-            pd.filename.html(obj.fileCounter + s.fileCounterStyle + filename);
+
+            var fileNameStr = "";
+            if(s.showFileCounter) fileNameStr = obj.fileCounter + s.fileCounterStyle + filename;
+            else fileNameStr = filename;
+
+            pd.filename.html(fileNameStr);
             obj.fileCounter++;
             obj.selectedFiles++;
             if(s.showPreview)
