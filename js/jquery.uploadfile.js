@@ -84,7 +84,8 @@
             showPreview: false,
             previewHeight: "auto",
             previewWidth: "100%",
-            uploadFolder:"uploads/"
+            uploadFolder:"uploads/",
+            inputFileClass: ""
         }, options);
 
         this.fileCounter = 1;
@@ -174,7 +175,7 @@
                 pd.preview.attr('src',s.uploadFolder+filename);
                 pd.preview.show();
             }
-            
+
             if(s.showDownload) {
                 pd.download.show();
                 pd.download.click(function () {
@@ -408,13 +409,13 @@
             var fileUploadId = "ajax-upload-id-" + (new Date().getTime());
 
             var form = $("<form method='" + s.method + "' action='" + s.url + "' enctype='" + s.enctype + "'></form>");
-            var fileInputStr = "<input type='file' id='" + fileUploadId + "' name='" + s.fileName + "' accept='" + s.acceptFiles + "'/>";
+            var fileInputStr = "<input type='file' id='" + fileUploadId + "' name='" + s.fileName + "' class='" + s.inputFileClass + "' accept='" + s.acceptFiles + "'/>";
             if(s.multiple) {
                 if(s.fileName.indexOf("[]") != s.fileName.length - 2) // if it does not endwith
                 {
                     s.fileName += "[]";
                 }
-                fileInputStr = "<input type='file' id='" + fileUploadId + "' name='" + s.fileName + "' accept='" + s.acceptFiles + "' multiple/>";
+                fileInputStr = "<input type='file' id='" + fileUploadId + "' name='" + s.fileName + "' class='" + s.inputFileClass + "' accept='" + s.acceptFiles + "' multiple/>";
             }
             var fileInput = $(fileInputStr).appendTo(form);
 
