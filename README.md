@@ -65,7 +65,10 @@ Upload Form method type  <code>POST</code> or <code>GET</code>. Default is <code
 Upload Form enctype. Default is <code>multipart/form-data</code>.
   
 ###formData
-An object that should be send with file upload. <code>data: { key1: 'value1', key2: 'value2' }</code>
+An object that should be send with file upload. 
+````javascript
+formData: { key1: 'value1', key2: 'value2' }
+````
 
 ###dynamicFormData
 To provide form data dynamically
@@ -143,7 +146,7 @@ File Counter style can be changed using <code>fileCounterStyle</code>. Default i
 ###showProgress
 If it is set to <code>true</code>, Progress precent is shown to user. Default is<code>false</code> 
 
-###showPreivew
+###showPreview
 If it is set to <code>true</code>, preview is shown to images. Default is<code>false</code> 
 
 ###previewHeight
