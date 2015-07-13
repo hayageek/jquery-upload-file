@@ -7,7 +7,7 @@ foreach($files as $file)
 {
 	if($file == "." || $file == "..")
 		continue;
-	$ret[]=$file;
+	$ret[]=$dir."/".$file;
 
 }
 

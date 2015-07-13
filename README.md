@@ -12,10 +12,9 @@ http://hayageek.com/docs/jquery-upload-file.php
 
 #Supported Browsers
 IE 8.0,IE 9.0,IE 10.0,Firefox,Safari,Opera,Chrome
-
 Drag drop is supported in IE10,Firefox,Safari,Opera,Chrome
  
-##API
+##Methods
 
 ###uploadFile( options )
  Creates Ajax form and uploads the files to server. 
@@ -28,7 +27,6 @@ var uploadObj = $("#uploadDivId").uploadFile(options);
  uploads all the selected files. This function is used when <code>autoSubmit</code> option is set to <code>false</code>.
 ````javascript
 uploadObj.startUpload();
-
 ````
 
 ###stopUpload()
@@ -41,9 +39,21 @@ Cancel all the selected files ( when autoSubmit:false)
 ````javascript
 uploadObj.cancelAll();
 ````
+###remove()
+remove the widget from the document.
+````javascript
+uploadObj.remove();
+````
 
+###reset()
+resets the widget properities
+````javascript
+uploadObj.reset();
+uploadObj.reset(false);//if you dont want remove the existing progress bars
 
-#getResponses()
+````
+
+###getResponses()
 Responses from the server are collected  and returned.
 ````javascript
 uploadObj.getResponses()
@@ -55,7 +65,6 @@ uploadObj.getResponses()
 
 ###url
 Server URL which handles File uploads 
-
 
 ###method
 Upload Form method type  <code>POST</code> or <code>GET</code>. Default is <code>POST</code>
@@ -80,6 +89,53 @@ dynamicFormData: function()
 	return data;    	
 }
 ````
+###extraHTML
+You can extra div elements to each statusbar.  This is useful only when you set <code>autoSubmit</code> to <code>false</code>. 
+````javascript
+extraHTML:function()
+    {
+	    	var html = "<div><b>File tags:</b><input type='text' name='tags' value='' /> <br/>";
+    		html += "<b>Directory</b>:<select name='values'><option value='1'>ONE</option><option value='2'>TWO</option></select>";
+			html += "</div>";
+			return html;    		
+    }
+````
+###customProgressBar
+Using this you can add your own custom progress bar.
+````
+    customProgressBar: function(obj,s)
+		{
+			this.statusbar = $("<div class='ajax-file-upload-statusbar'></div>");
+            this.preview = $("<img class='ajax-file-upload-preview' />").width(s.previewWidth).height(s.previewHeight).appendTo(this.statusbar).hide();
+            this.filename = $("<div class='ajax-file-upload-filename'></div>").appendTo(this.statusbar);
+            this.progressDiv = $("<div class='ajax-file-upload-progress'>").appendTo(this.statusbar).hide();
+            this.progressbar = $("<div class='ajax-file-upload-bar'></div>").appendTo(this.progressDiv);
+            this.abort = $("<div>" + s.abortStr + "</div>").appendTo(this.statusbar).hide();
+            this.cancel = $("<div>" + s.cancelStr + "</div>").appendTo(this.statusbar).hide();
+            this.done = $("<div>" + s.doneStr + "</div>").appendTo(this.statusbar).hide();
+            this.download = $("<div>" + s.downloadStr + "</div>").appendTo(this.statusbar).hide();
+            this.del = $("<div>" + s.deletelStr + "</div>").appendTo(this.statusbar).hide();
+            
+            this.abort.addClass("ajax-file-upload-red");
+            this.done.addClass("ajax-file-upload-green");
+			this.download.addClass("ajax-file-upload-green");            
+            this.cancel.addClass("ajax-file-upload-red");
+            this.del.addClass("ajax-file-upload-red");
+            if(count++ %2 ==0)
+	            this.statusbar.addClass("even");
+            else
+    			this.statusbar.addClass("odd"); 
+			return this;
+		}
+````		
+		
+###sequential
+Enables sequential upload. You can limit the number of uploads by </code>sequentialCount</code>
+````javascript
+sequential:true,
+sequentialCount:1
+````
+With the above configuration, only one file is uploaded at a time.
 
 ###maxFileSize
 Allowed Maximum file Size in bytes.
@@ -146,6 +202,9 @@ File Counter style can be changed using <code>fileCounterStyle</code>. Default i
 ###showProgress
 If it is set to <code>true</code>, Progress precent is shown to user. Default is<code>false</code> 
 
+###showFileSize  
+If it is set to <code>true</code>, File size is shown 
+
 ###showPreview
 If it is set to <code>true</code>, preview is shown to images. Default is<code>false</code> 
 
@@ -160,7 +219,7 @@ Using this you can place the progressbar wherever you want.
 ````javascript
 showQueueDiv: "output"
 ````
-progress bar is added to a div with id <code>output</div>
+progress bar is added to a div with id <code>output</code>
 
 
 ###statusBarWidth
@@ -296,4 +355,3 @@ for custom errors,expected json object from server is:
 
 
 ````
-
