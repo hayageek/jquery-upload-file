@@ -188,21 +188,27 @@
 	
 		}
         //This is for showing Old files to user.
-        this.createProgress = function (filename) {
+        this.createProgress = function (filename,filepath,filesize) {
             var pd = new createProgressDiv(this, s);
             pd.progressDiv.show();
             pd.progressbar.width('100%');
 
             var fileNameStr = "";
-            if(s.showFileCounter) fileNameStr = obj.fileCounter + s.fileCounterStyle + filename;
+            if(s.showFileCounter) 
+            	fileNameStr = obj.fileCounter + s.fileCounterStyle + filename;
             else fileNameStr = filename;
+            
+            
+            if(s.showFileSize)
+				fileNameStr += " ("+getSizeStr(filesize)+")";
+
 
             pd.filename.html(fileNameStr);
             obj.fileCounter++;
             obj.selectedFiles++;
             if(s.showPreview)
             {
-                pd.preview.attr('src',s.filename);
+                pd.preview.attr('src',filepath);
                 pd.preview.show();
             }
             
@@ -235,9 +241,12 @@
 			running = true;
             (function checkPendingForms() {
                 
+                	//if not sequential upload all files
+                	if(!s.sequential) s.sequentialCount=99999;
+                	
 					if(mainQ.length == 0 &&   progressQ.length == 0)
 					{
-						s.afterUploadAll(obj);
+						if(s.afterUploadAll) s.afterUploadAll(obj);
 						running= false;
 					}              
 					else 
@@ -569,7 +578,6 @@
 
                     var pd = new createProgressDiv(obj, s);
                     pd.filename.html(fileList);
-                    pd.filename.html("");
                     ajaxFormSubmit(form, s, pd, fileArray, obj, null);
                 }
 
@@ -662,7 +670,7 @@
             if(s.extraHTML)
 	            bar.extraHTML = $("<div class='extrahtml'>"+s.extraHTML()+"</div>").insertAfter(bar.filename);    	
             
-			$(obj.container).append(bar.statusbar);
+			$(obj.container).prepend(bar.statusbar);
             return bar;
         }
 
@@ -839,14 +847,10 @@
             }
 
             if(s.autoSubmit) {
-            	if(s.sequential)
-            	{
-	            	form.ajaxForm(options);
-            		mainQ.push(form);
-            		submitPendingUploads();
-            	}
-                else
-	                form.ajaxSubmit(options);
+	            form.ajaxForm(options);
+                mainQ.push(form);
+            	submitPendingUploads();
+	            
             } else {
                 if(s.showCancel) {
                     pd.cancel.show();
@@ -860,8 +864,9 @@
                         updateFileCounter(s, obj);
                     });
                 }
-                form.ajaxForm(options);
-
+	            form.ajaxForm(options);
+                mainQ.push(form);
+	            
             }
 
         }

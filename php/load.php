@@ -7,7 +7,12 @@ foreach($files as $file)
 {
 	if($file == "." || $file == "..")
 		continue;
-	$ret[]=$dir."/".$file;
+	$filePath=$dir."/".$file;
+	$details = array();
+	$details['name']=$file;
+	$details['path']=$filePath;
+	$details['size']=filesize($filePath);
+	$ret[] = $details;
 
 }
 
