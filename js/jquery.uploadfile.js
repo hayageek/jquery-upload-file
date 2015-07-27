@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 4.0.1
+ * version: 4.0.2
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -142,12 +142,10 @@
         })();
 
         this.startUpload = function () {
-            $("." + this.formGroup).each(function (i, items) {
-                if($(this).is('form'))
+            $("form ." + this.formGroup).each(function (i, items) {
                 mainQ.push($(this));
             });
  			submitPendingUploads();
-
         }
 
         this.getFileCount = function () {
@@ -218,16 +216,17 @@
                     if(s.downloadCallback) s.downloadCallback.call(obj, [filename]);
                 });
             }
-            pd.del.show();
-
-            pd.del.click(function () {
-                pd.statusbar.hide().remove();
-                var arr = [filename];
-                if(s.deleteCallback) s.deleteCallback.call(this, arr, pd);
-                obj.selectedFiles -= 1;
-                updateFileCounter(s, obj);
-            });
-
+            if(s.showDelete)
+            {
+	            pd.del.show();
+    	        pd.del.click(function () {
+        	        pd.statusbar.hide().remove();
+            	    var arr = [filename];
+                	if(s.deleteCallback) s.deleteCallback.call(this, arr, pd);
+	                obj.selectedFiles -= 1;
+    	            updateFileCounter(s, obj);
+        	    });
+            }
         }
 
         this.getResponses = function () {
