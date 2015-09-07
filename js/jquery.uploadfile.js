@@ -445,7 +445,7 @@
         }
 
         function isFileTypeAllowed(obj, s, fileName) {
-            var fileExtensions = s.allowedTypes.toLowerCase().split(",");
+            var fileExtensions = s.allowedTypes.toLowerCase().split(/[\s,]+/g);
             var ext = fileName.split('.').pop().toLowerCase();
             if(s.allowedTypes != "*" && jQuery.inArray(ext, fileExtensions) < 0) {
                 return false;
