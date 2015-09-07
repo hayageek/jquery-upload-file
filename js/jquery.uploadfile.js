@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 4.0.2
+ * version: 4.0.4
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
