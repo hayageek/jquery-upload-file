@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 4.0.4
+ * version: 4.0.5
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -141,11 +141,14 @@
             } else window.setTimeout(checkAjaxFormLoaded, 10);
         })();
 
-        this.startUpload = function () {
-            $("form ." + this.formGroup).each(function (i, items) {
+	   this.startUpload = function () {
+            $("." + this.formGroup).each(function (i, items) {
+                if($(this).is('form'))
                 mainQ.push($(this));
             });
- 			submitPendingUploads();
+            if(mainQ.length >= 1 )
+	 			submitPendingUploads();
+
         }
 
         this.getFileCount = function () {
