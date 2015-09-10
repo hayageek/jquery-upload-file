@@ -29,7 +29,7 @@
     "jquery": ">=1.6",
     "form": ""
   },
-  "main": "index.js",
+  "main": "./js/jquery.uploadfile.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
