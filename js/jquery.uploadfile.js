@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 4.0.6
+ * version: 4.0.7
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -89,7 +89,8 @@
             showPreview: false,
             previewHeight: "auto",
             previewWidth: "100%",
-            extraHTML:false
+            extraHTML:false,
+            uploadQueuOrder:'top'
         }, options);
 
         this.fileCounter = 1;
@@ -673,7 +674,10 @@
             if(s.extraHTML)
 	            bar.extraHTML = $("<div class='extrahtml'>"+s.extraHTML()+"</div>").insertAfter(bar.filename);    	
             
-			$(obj.container).prepend(bar.statusbar);
+            if(s.uploadQueuOrder == 'bottom')
+				$(obj.container).append(bar.statusbar);
+			else
+				$(obj.container).prepend(bar.statusbar);
             return bar;
         }
 
