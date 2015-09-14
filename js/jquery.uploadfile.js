@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 4.0.5
+ * version: 4.0.6
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -55,6 +55,7 @@
             onSuccess: function (files, response, xhr, pd) {},
             onError: function (files, status, message, pd) {},
             onCancel: function (files, pd) {},
+            onAbort: function (files, pd) {},            
             downloadCallback: false,
             deleteCallback: false,
             afterUploadAll: false,
@@ -737,6 +738,8 @@
                             removeExistingFileName(obj, fileArray);
                             xhr.abort();
                             obj.selectedFiles -= fileArray.length; //reduce selected File count
+							s.onAbort.call(obj, fileArray, pd);
+
                         });
                     }
                     if(!feature.formdata) //For iframe based push
