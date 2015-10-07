@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 4.0.7
+ * version: 4.0.8
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -144,10 +144,14 @@
         })();
 
 	   this.startUpload = function () {
-            $("." + this.formGroup).each(function (i, items) {
-                if($(this).is('form'))
-                mainQ.push($(this));
-            });
+	   		$("form").each(function(i,items)
+	   		{
+	   			if($(this).hasClass(obj.formGroup))
+	   			{
+					mainQ.push($(this));
+	   			}
+	   		});
+
             if(mainQ.length >= 1 )
 	 			submitPendingUploads();
 
@@ -557,7 +561,6 @@
                 uploadLabel.unbind("click");
                 form.hide();
                 createCutomInputFile(obj, group, s, uploadLabel);
-
                 form.addClass(group);
                 if(s.serialize && feature.fileapi && feature.formdata) //use HTML5 support and split file submission
                 {
@@ -722,7 +725,7 @@
                     pd.cancel.show()
                     form.remove();
                     pd.cancel.click(function () {
-                    	mainQ.pop();
+                    	 mainQ.splice(mainQ.indexOf(form), 1);
                         removeExistingFileName(obj, fileArray);
                         pd.statusbar.remove();
                         s.onCancel.call(obj, fileArray, pd);
@@ -864,7 +867,7 @@
                 if(s.showCancel) {
                     pd.cancel.show();
                     pd.cancel.click(function () {
-	                    mainQ.pop();
+	                     mainQ.splice(mainQ.indexOf(form), 1);
                         removeExistingFileName(obj, fileArray);
                         form.remove();
                         pd.statusbar.remove();
@@ -874,8 +877,6 @@
                     });
                 }
 	            form.ajaxForm(options);
-                mainQ.push(form);
-	            
             }
 
         }
