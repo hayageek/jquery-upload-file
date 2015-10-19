@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 4.0.8
+ * version: 4.0.9
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -807,6 +807,7 @@
                         if(s.showDelete) {
                             pd.del.show();
                             pd.del.click(function () {
+		                        removeExistingFileName(obj, fileArray);
                                 pd.statusbar.hide().remove();
                                 if(s.deleteCallback) s.deleteCallback.call(this, data, pd);
                                 obj.selectedFiles -= fileArray.length; //reduce selected File count
