@@ -5,19 +5,19 @@
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     border-radius: 4px;
-    padding: 5px 5px 5px 15px
+    padding: 5px 5px 5px 15px;
 }
 
 .ajax-file-upload-filename {
     width: 300px;
     height: auto;
-    margin: 0 5px 5px 0
+    margin: 0 5px 5px 0;
 }
 
 .ajax-file-upload-filesize {
     width: 50px;
     height: auto;
-    margin: 0 5px 5px ;
+    margin: 0 5px 5px 0;
     display: inline-block;
     vertical-align:middle;
 }
@@ -45,7 +45,7 @@
     position: absolute;
     display: inline-block;
     top: 3px;
-    left: 48%
+    left: 48%;
 }
 
 .ajax-file-upload-red {
