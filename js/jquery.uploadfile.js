@@ -138,7 +138,7 @@
 		            obj.container = $("<div class='ajax-file-upload-container'></div>").insertAfter($(obj));
         
                 s.onLoad.call(this, obj);
-                createCutomInputFile(obj, formGroup, s, uploadLabel);
+                createCustomInputFile(obj, formGroup, s, uploadLabel);
 
             } else window.setTimeout(checkAjaxFormLoaded, 10);
         })();
@@ -514,7 +514,7 @@
             }
         }
 
-        function createCutomInputFile(obj, group, s, uploadLabel) {
+        function createCustomInputFile (obj, group, s, uploadLabel) {
 
             var fileUploadId = "ajax-upload-id-" + (new Date().getTime());
 
@@ -562,7 +562,7 @@
 
                 uploadLabel.unbind("click");
                 form.hide();
-                createCutomInputFile(obj, group, s, uploadLabel);
+                createCustomInputFile(obj, group, s, uploadLabel);
                 form.addClass(group);
                 if(s.serialize && feature.fileapi && feature.formdata) //use HTML5 support and split file submission
                 {
