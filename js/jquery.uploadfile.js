@@ -236,6 +236,8 @@
     	            updateFileCounter(s, obj);
         	    });
             }
+
+            return pd;
         }
 
         this.getResponses = function () {
