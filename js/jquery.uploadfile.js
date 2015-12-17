@@ -90,7 +90,7 @@
             previewHeight: "auto",
             previewWidth: "100%",
             extraHTML:false,
-            uploadQueuOrder:'top'
+            uploadQueueOrder:'top'
         }, options);
 
         this.fileCounter = 1;
@@ -679,7 +679,7 @@
             if(s.extraHTML)
 	            bar.extraHTML = $("<div class='extrahtml'>"+s.extraHTML()+"</div>").insertAfter(bar.filename);    	
             
-            if(s.uploadQueuOrder == 'bottom')
+            if(s.uploadQueueOrder == 'bottom')
 				$(obj.container).append(bar.statusbar);
 			else
 				$(obj.container).prepend(bar.statusbar);
