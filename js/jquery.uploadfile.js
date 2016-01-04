@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 4.0.9
+ * version: 4.0.10
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -267,6 +267,8 @@
 							if(frm != undefined)
 							{
 				    	    	progressQ.push(frm);
+				    	    	//Remove the class group.
+				    	    	frm.removeClass(obj.formGroup);
     	    					frm.submit();
         					}
 						}						
