@@ -104,7 +104,7 @@
         {
             s.dragDrop = false;
         }
-        if(!feature.formdata) {
+        if(!feature.formdata || s.maxFileCount === 1) {
             s.multiple = false;
         }
 
