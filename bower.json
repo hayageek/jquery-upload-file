@@ -1,19 +1,16 @@
 {
   "name": "jquery-upload-file",
-  "version": "4.0.10",
+  "version": "4.0.2",
   "homepage": "https://github.com/hayageek/jquery-upload-file",
   "authors": "Ravishanker Kusuma (http://hayageek.com)",
-  "main": [
-    "js/jquery.uploadfile.js",
-    "css/uploadfile.css"
-  ],
+  "main": "js/jquery.uploadfile.js",
   "dependencies": {
     "jquery": ">=1.8"
   },
   "ignore": [
-    "**/.*",
-    "demos",
-    "node_modules",
-    "bower_components"
+    "README.md",
+    "composer.json",
+    "uploadfile.jquery.json",
+    "package.json"
   ]
 }
