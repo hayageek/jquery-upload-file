@@ -1,8 +1,8 @@
 {
   "name": "jquery-upload-file",
-  "version": "4.0.10",
-  "main": "js/jquery.uploadfile.js",
-  "author": "http://hayageek.com",
+  "version": "4.0.5",
+  "main": "./js/jquery.uploadfile.js",
+  "author": "Ravishanker Kusuma (http://hayageek.com)",
   "dependencies": {
     "jquery": ">=1.8"
   },
