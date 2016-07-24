@@ -829,7 +829,7 @@
                     if(s.showDownload) {
                         pd.download.show();
                         pd.download.click(function () {
-                            if(s.downloadCallback) s.downloadCallback(data,pd);
+                            if(s.downloadCallback) s.downloadCallback(pd, data);
                         });
                     }
                     form.remove();
