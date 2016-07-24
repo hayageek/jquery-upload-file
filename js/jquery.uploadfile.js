@@ -222,7 +222,7 @@
             if(s.showDownload) {
                 pd.download.show();
                 pd.download.click(function () {
-                    if(s.downloadCallback) s.downloadCallback.call(obj, [filename]);
+                    if(s.downloadCallback) s.downloadCallback.call(obj, pd, [filename]);
                 });
             }
             if(s.showDelete)
