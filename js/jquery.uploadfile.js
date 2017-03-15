@@ -179,6 +179,13 @@
             //update new settings
             s = $.extend(s, settings);
         }
+
+	this.enqueueFile = function(file){
+	    if( !( file instanceof File) ) return;
+	    var files = [file];
+            serializeAndUploadFiles(s, obj, files);
+	}
+        
         this.reset = function (removeStatusBars) {
 			obj.fileCounter = 1;
 			obj.selectedFiles = 0;
