@@ -748,7 +748,10 @@
                     return false;
                 },
                 beforeSend: function (xhr, o) {
-
+                    for (var key in o.headers) {
+                        xhr.setRequestHeader(key, o.headers[key]);
+                    }
+			
                     pd.progressDiv.show();
                     pd.cancel.hide();
                     pd.done.hide();
