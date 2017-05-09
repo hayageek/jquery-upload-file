@@ -365,7 +365,7 @@
             return result;
         }
 		function noserializeAndUploadFiles(s, obj, files) {
-		    var ts = s;
+		    var ts = $.extend({}, s);
                 var fd = new FormData();
                 var fileArray = [];
                 var fileName = s.fileName.replace("[]", "");
@@ -430,7 +430,8 @@
                 }
                 obj.selectedFiles++;
                 obj.existingFileNames.push(files[i].name);
-                var ts = s;
+                // Make object immutable
+                var ts = $.extend({}, s);
                 var fd = new FormData();
                 var fileName = s.fileName.replace("[]", "");
                 fd.append(fileName, files[i]);
