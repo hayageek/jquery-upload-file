@@ -90,8 +90,7 @@
             previewHeight: "auto",
             previewWidth: "100%",
             extraHTML:false,
-            uploadQueueOrder:'top',
-            headers: {}
+            uploadQueueOrder:'top'
         }, options);
 
         this.fileCounter = 1;
@@ -105,7 +104,7 @@
         {
             s.dragDrop = false;
         }
-        if(!feature.formdata || s.maxFileCount === 1) {
+        if(!feature.formdata) {
             s.multiple = false;
         }
 
@@ -115,7 +114,8 @@
 
         var uploadLabel = $('<div>' + s.uploadStr + '</div>');
 
-        $(uploadLabel).addClass(s.uploadButtonClass);
+        //$(uploadLabel).addClass(s.uploadButtonClass);
+        $('.browse-attached-files-button').addClass(s.uploadButtonClass);
 
         // wait form ajax Form plugin and initialize
         (function checkAjaxFormLoaded() {
@@ -126,8 +126,7 @@
                     $(obj).append(dragDrop);
                     $(dragDrop).append(uploadLabel);
                     $(dragDrop).append($(s.dragDropStr));
-                    setDragDropHandlers(obj, s, dragDrop);
-
+                    setDragDropHandlers(obj, s, $('#file-attachment-modal .modal-body'));
                 } else {
                     $(obj).append(uploadLabel);
                 }
@@ -136,7 +135,7 @@
    				if(s.showQueueDiv)
 		        	obj.container =$("#"+s.showQueueDiv);
         		else
-		            obj.container = $("<div class='ajax-file-upload-container'></div>").insertAfter($(obj));
+		            obj.container = $("<div class='ajax-file-upload-container'></div>").appendTo($('#file-attachment-modal .attached-files-main-area'));
 
                 s.onLoad.call(this, obj);
                 createCustomInputFile(obj, formGroup, s, uploadLabel);
@@ -203,22 +202,36 @@
 
 		}
         //This is for showing Old files to user.
-        this.createProgress = function (filename,filepath,filesize) {
-            var pd = new createProgressDiv(this, s);
+        //samuel: added support for adding the data id of the file added
+        this.createProgress = function (filename,answerFileId,filesize) {
+	       var filepath = '/';
+            var pd = new createProgressDiv(this, s, answerFileId);
             pd.progressDiv.show();
-            pd.progressbar.width('100%');
+            pd.progressbar.hide();
 
             var fileNameStr = "";
+            var fileSizeStr = "";
             if(s.showFileCounter)
             	fileNameStr = obj.fileCounter + s.fileCounterStyle + filename;
             else fileNameStr = filename;
 
 
             if(s.showFileSize)
-				fileNameStr += " ("+getSizeStr(filesize)+")";
+                if (typeof filesize === 'string') {
+                    fileSizeStr = filesize
+                } else {
+                    fileSizeStr = getSizeStr(filesize);
+                }
+            pd.fileSizeStr = fileSizeStr;
 
 
             pd.filename.html(fileNameStr);
+            pd.filesize.html(fileSizeStr);
+            if (fileNameStr.endsWith('.pdf')) {
+                pd.fileimage.addClass('file-type-pdf')
+            } else {
+                pd.fileimage.addClass('file-type-doc')
+            }
             obj.fileCounter++;
             obj.selectedFiles++;
             if(s.showPreview)
@@ -448,13 +461,15 @@
 
                 var pd = new createProgressDiv(obj, s);
                 var fileNameStr = "";
+                var fileSizeStr = "";
                 if(s.showFileCounter) fileNameStr = obj.fileCounter + s.fileCounterStyle + files[i].name
                 else fileNameStr = files[i].name;
 
 				if(s.showFileSize)
-				fileNameStr += " ("+getSizeStr(files[i].size)+")";
+				fileSizeStr = getSizeStr(files[i].size);
 
 				pd.filename.html(fileNameStr);
+				pd.filesize.html(fileSizeStr);
                 var form = $("<form style='display:block; position:absolute;left: 150px;' class='" + obj.formGroup + "' method='" + s.method + "' action='" +
                     s.url + "' enctype='" + s.enctype + "'></form>");
                 form.appendTo('body');
@@ -627,9 +642,10 @@
                     'filter': 'alpha(opacity=0)',
                     '-ms-filter': "alpha(opacity=0)",
                     '-khtml-opacity': '0.0',
-                    '-moz-opacity': '0.0'
+                    '-moz-opacity': '0.0',
+                    'visibility': 'hidden'
                 });
-                form.appendTo(uploadLabel);
+                form.appendTo($('#file-attachment-modal .modal-footer'));
 
             } else {
                 form.appendTo($('body'));
@@ -652,20 +668,27 @@
         }
 
 
-		function defaultProgressBar(obj,s)
+		function defaultProgressBar(obj,s, answerFileID)
 		{
-
-			this.statusbar = $("<div class='ajax-file-upload-statusbar'></div>").width(s.statusBarWidth);
-            this.preview = $("<img class='ajax-file-upload-preview' />").width(s.previewWidth).height(s.previewHeight).appendTo(this.statusbar).hide();
-            this.filename = $("<div class='ajax-file-upload-filename'></div>").appendTo(this.statusbar);
-            this.progressDiv = $("<div class='ajax-file-upload-progress'>").appendTo(this.statusbar).hide();
+            //samuel: added answerFileID and file size
+			this.statusbar = $("<div class='ajax-file-upload-statusbar row' data-answer-file-id="+answerFileID+"></div>");
+            this.fileimage = $("<div class='col-md-1' style='padding-left: 0'>" +
+                                    "<div class='ajax-file-upload-image'></div>" +
+                                "</div>").appendTo(this.statusbar);
+            this.maindiv = $("<div class='col-md-10 file-main-container'></div>").appendTo(this.statusbar);
+            this.leftdiv = $("<div class='file-object-left-container'></div>").appendTo(this.maindiv);
+            this.rightdiv = $("<div class='file-object-right-container'></div>").appendTo(this.maindiv);
+            this.preview = $("<img class='ajax-file-upload-preview' />").width(s.previewWidth).height(s.previewHeight).appendTo(this.maindiv).hide();
+            this.filename = $("<div class='ajax-file-upload-filename file-object-left'></div>").appendTo(this.leftdiv);
+            this.filesize = $("<div class='ajax-file-upload-filesize file-object-left'></div>").appendTo(this.leftdiv);
+            this.progressDiv = $("<div class='ajax-file-upload-progress'></div>").appendTo(this.maindiv).hide();
             this.progressbar = $("<div class='ajax-file-upload-bar'></div>").appendTo(this.progressDiv);
-            this.abort = $("<div>" + s.abortStr + "</div>").appendTo(this.statusbar).hide();
-            this.cancel = $("<div>" + s.cancelStr + "</div>").appendTo(this.statusbar).hide();
-            this.done = $("<div>" + s.doneStr + "</div>").appendTo(this.statusbar).hide();
-            this.download = $("<div>" + s.downloadStr + "</div>").appendTo(this.statusbar).hide();
-            this.del = $("<div>" + s.deletelStr + "</div>").appendTo(this.statusbar).hide();
-
+            this.progresspercentage = $("<div class='ajax-file-upload-percent'></div>").appendTo(this.rightdiv);
+            this.abort = $("<span class='glyphicon glyphicon-remove file-remove-button'></span>").appendTo(this.rightdiv).hide();
+            this.cancel = $("<div>" + s.cancelStr + "</div>").appendTo(this.maindiv).hide();
+            this.done = $("<div>" + s.doneStr + "</div>").appendTo(this.maindiv).hide();
+            this.download = $("<span class='glyphicon glyphicon-download-alt file-download-button'></span>").appendTo(this.rightdiv).hide();
+            this.del = $("<span class='glyphicon glyphicon-remove file-remove-button'></span>").appendTo(this.rightdiv).hide();
             this.abort.addClass("ajax-file-upload-red");
             this.done.addClass("ajax-file-upload-green");
 			this.download.addClass("ajax-file-upload-green");
@@ -674,12 +697,12 @@
 
 			return this;
 		}
-        function createProgressDiv(obj, s) {
+        function createProgressDiv(obj, s, answerFileID) {
 	        var bar = null;
         	if(s.customProgressBar)
         		bar =  new s.customProgressBar(obj,s);
         	else
-        		bar =  new defaultProgressBar(obj,s);
+        		bar =  new defaultProgressBar(obj,s, answerFileID);
 
 			bar.abort.addClass(obj.formGroup);
             bar.abort.addClass(s.abortButtonClass);
@@ -709,7 +732,6 @@
                 data: s.formData,
                 formData: s.fileData,
                 dataType: s.returnType,
-                headers: s.headers,
                 beforeSubmit: function (formData, $form, options) {
                     if(s.onSubmit.call(this, fileArray) != false) {
                         if(s.dynamicFormData)
@@ -769,7 +791,7 @@
                     if(!feature.formdata) //For iframe based push
                     {
                         pd.progressbar.width('5%');
-                    } else pd.progressbar.width('1%'); //Fix for small files
+                    } else pd.progressbar.width('0%'); //Fix for small files
                 },
                 uploadProgress: function (event, position, total, percentComplete) {
                     //Fix for smaller file uploads in MAC
@@ -779,6 +801,7 @@
                     if(percentComplete > 1) pd.progressbar.width(percentVal)
                     if(s.showProgress) {
                         pd.progressbar.html(percentVal);
+                        pd.progresspercentage.html(percentVal);
                         pd.progressbar.css('text-align', 'center');
                     }
 
@@ -808,7 +831,7 @@
                         pd.progressbar.html('100%');
                         pd.progressbar.css('text-align', 'center');
                     }
-
+                    pd.progressbar.hide();
                     pd.abort.hide();
                     s.onSuccess.call(this, fileArray, data, xhr, pd);
                     if(s.showStatusAfterSuccess) {
