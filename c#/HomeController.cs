@@ -26,7 +26,8 @@ namespace jQuery_Upload_File_Plugin_DotNet.Controllers
                 string category = HttpContext.Request.Params["category"];
 
                 DirectoryInfo di = Directory.CreateDirectory(Server.MapPath("~/Tmp/Files"));// If you don't have the folder yet, you need to create.
-                string savedFileName = Path.Combine(di.FullName, hpf.FileName);
+                string sentFileName = Path.GetFileName(hpf.FileName); //it can be just a file name or a user local path! it depends on the used browser. So we need to ensure that this var will contain just the file name.
+                string savedFileName = Path.Combine(di.FullName, sentFileName);
                 hpf.SaveAs(savedFileName);
                         
                 var msg = new { msg = "File Uploaded", filename = hpf.FileName, url= savedFileName };
