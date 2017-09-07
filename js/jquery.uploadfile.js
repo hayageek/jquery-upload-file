@@ -1,6 +1,6 @@
 /*!
  * jQuery Upload File Plugin
- * version: 4.0.10
+ * version: 4.0.11
  * @requires jQuery v1.5 or later & form plugin
  * Copyright (c) 2013 Ravishanker Kusuma
  * http://hayageek.com/
@@ -73,7 +73,7 @@
             uploadStr:"Upload",
             abortStr: "Abort",
             cancelStr: "Cancel",
-            deletelStr: "Delete",
+            deleteStr: "Delete",
             doneStr: "Done",
             multiDragErrorStr: "Multiple File Drag &amp; Drop is not allowed.",
             extErrorStr: "is not allowed. Allowed extensions: ",
@@ -144,6 +144,7 @@
             } else window.setTimeout(checkAjaxFormLoaded, 10);
         })();
 
+
 	   this.startUpload = function () {
 	   		$("form").each(function(i,items)
 	   		{
@@ -178,6 +179,17 @@
         this.update = function (settings) {
             //update new settings
             s = $.extend(s, settings);
+
+			//We need to update action for already created Form.            
+            if(settings.hasOwnProperty('url'))
+            {
+            	$("form").each(function(i,items)
+		   		{
+					$(this).attr('action',settings['url']);
+		   		});
+            }
+            
+            
         }
 
 	this.enqueueFile = function(file){
@@ -664,7 +676,7 @@
             this.cancel = $("<div>" + s.cancelStr + "</div>").appendTo(this.statusbar).hide();
             this.done = $("<div>" + s.doneStr + "</div>").appendTo(this.statusbar).hide();
             this.download = $("<div>" + s.downloadStr + "</div>").appendTo(this.statusbar).hide();
-            this.del = $("<div>" + s.deletelStr + "</div>").appendTo(this.statusbar).hide();
+            this.del = $("<div>" + s.deleteStr + "</div>").appendTo(this.statusbar).hide();
 
             this.abort.addClass("ajax-file-upload-red");
             this.done.addClass("ajax-file-upload-green");
@@ -718,7 +730,7 @@
                             if(sData) {
                                 for(var j = 0; j < sData.length; j++) {
                                     if(sData[j]) {
-                                        if(s.fileData != undefined) options.formData.append(sData[j][0], sData[j][1]);
+                                        if(s.serialize && s.fileData != undefined) options.formData.append(sData[j][0], sData[j][1]);
                                         else options.data[sData[j][0]] = sData[j][1];
                                     }
                                 }
@@ -729,7 +741,7 @@
                         {
                         	$(pd.extraHTML).find("input,select,textarea").each(function(i,items)
                         	{
-                        		    if(s.fileData != undefined) options.formData.append($(this).attr('name'),$(this).val());
+                        		    if(s.serialize && s.fileData != undefined) options.formData.append($(this).attr('name'),$(this).val());
                                         else options.data[$(this).attr('name')] = $(this).val();
                         	});
                         }
