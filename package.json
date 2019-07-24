@@ -26,16 +26,20 @@
   "download": "https://github.com/hayageek/jquery-upload-file",
   "demo": "http://hayageek.com/docs/jquery-upload-file.php",
   "dependencies": {
-    "jquery": ">=1.6",
-    "form": ""
+    "form": "",
+    "jquery": ">=1.6"
   },
   "main": "./js/jquery.uploadfile.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"test\"",
+    "build": "echo \"build\""
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/hayageek/jquery-upload-file/"
+  },
+  "devDependecies": {
+    "uglifyjs": "^2.4.11"
   },
   "license": "MIT"
 }
