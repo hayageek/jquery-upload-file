@@ -96,7 +96,7 @@
 
         this.fileCounter = 1;
         this.selectedFiles = 0;
-        var formGroup = "ajax-file-upload-" + (new Date().getTime());
+        var formGroup = "ajax-file-upload-" + (new Date().getTime()) + random_str_gen(9);
         this.formGroup = formGroup;
         this.errorLog = $("<div></div>"); //Writing errors
         this.responses = [];
@@ -537,6 +537,16 @@
             }
         }
 
+	 function random_str_gen(length) {
+   		var result           = '';
+  		var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+   		var charactersLength = characters.length;
+		   for ( var i = 0; i < length; i++ ) {
+		      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+		   }
+		 return result;
+	}
+	    
         function createCustomInputFile (obj, group, s, uploadLabel) {
 
             var fileUploadId = "ajax-upload-id-" + (new Date().getTime());
