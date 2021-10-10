@@ -838,6 +838,7 @@
                             pd.del.click(function () {
 		                        removeExistingFileName(obj, fileArray);
                                 pd.statusbar.hide().remove();
+                                data=fileArray;
                                 if(s.deleteCallback) s.deleteCallback.call(this, data, pd);
                                 obj.selectedFiles -= fileArray.length; //reduce selected File count
                                 updateFileCounter(s, obj);
